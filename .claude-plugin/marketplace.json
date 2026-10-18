@@ -1,0 +1,14 @@
+{
+  "name": "ai-dev-process",
+  "description": "A way of working for one maintainer with AI assistants: issues, handover, ADRs, iterations and retros.",
+  "owner": {
+    "name": "nicoschmidt"
+  },
+  "plugins": [
+    {
+      "name": "ai-dev-process",
+      "source": "./plugins/ai-dev-process",
+      "description": "Procedures for capturing ideas, refinement, handover, ADRs, iteration planning, retros and adopting the process in a project."
+    }
+  ]
+}

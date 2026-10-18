@@ -1,0 +1,32 @@
+name: Process change
+description: A change to the rules, the skills, the mechanisms or the templates
+labels: ["process"]
+body:
+  - type: textarea
+    id: observation
+    attributes:
+      label: Observation
+      description: What happened, in which project, with links to the issues, pull requests or retro that show it.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The rule, mechanism, skill or template change. Prefer a mechanism where one is cheap.
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason
+      description: Why it holds beyond one project. Remove every domain word and check it still reads true.
+    validations:
+      required: true
+  - type: textarea
+    id: cost
+    attributes:
+      label: Cost
+      description: What it adds to every project's sessions, and what it changes on upgrade (MAJOR, MINOR or PATCH?).
+    validations:
+      required: true

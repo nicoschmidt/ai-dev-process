@@ -1,0 +1,11 @@
+{
+  "name": "ai-dev-process",
+  "description": "Procedures for capturing ideas, refinement, handover, ADRs, iteration planning, retros and adopting the process in a project.",
+  "version": "0.1.0",
+  "author": {
+    "name": "nicoschmidt"
+  },
+  "homepage": "https://github.com/nicoschmidt/ai-dev-process",
+  "repository": "https://github.com/nicoschmidt/ai-dev-process",
+  "license": "MIT"
+}
