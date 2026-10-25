@@ -11,10 +11,14 @@ where this skill and a rule disagree, the rule wins.
 
 ## 1. Get the inbox
 
-- **Claude Code:** read it yourself (read-only):
+- **Claude Code:** read it yourself (read-only), for every repository named
+  in `.ai-dev-process.conf` — the home repository and each member:
 
   ```bash
-  gh issue list --label idea --state open --limit 100 --json number,title,body,labels,createdAt
+  for repo in <home_repo> <member_repos>; do
+    echo "== $repo"
+    gh issue list --repo "$repo" --label idea --state open --limit 100 --json number,title,body,labels,createdAt
+  done
   ```
 
 - **Chat:** chat cannot read GitHub's list pages. Hand over the command above
@@ -31,6 +35,7 @@ reason — and let the maintainer decide, row by row or all at once:
 | --- | --- |
 | **close** (not planned) | It no longer matters, or never will. Most ideas end here, and that is fine. |
 | **merge** | An existing issue already covers it: comment there, close this as duplicate. |
+| **move** | It belongs in another repository of the project. `gh issue transfer` works between repositories of one owner, but never from a private repository to a public one: there, write a new public issue in public words and close the private one with a link. |
 | **transfer** | It is about the process in general → the process repository from `CLAUDE.md`. |
 | **refine** | It is worth doing. Continue with step 3. |
 
@@ -56,7 +61,9 @@ criterion costs more than a question.
 
 Write every body to a file beside the repository (`../issue-<n>-body.md`)
 and one script `../refine-<YYYY-MM-DD>.sh` that applies all outcomes in
-order. Real numbers, no placeholders:
+order. Real numbers, no placeholders. In a project of several repositories,
+every `gh` call names its `--repo`, and the body files carry the repository
+in their name:
 
 ```bash
 #!/usr/bin/env bash

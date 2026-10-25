@@ -1,17 +1,18 @@
 # Working agreements for AI assistants
 
 This repository **is** the process. It follows its own rules, which here are
-read from their source under `kit/` instead of from an installed copy:
+read from their source under `kit/common/` instead of from an installed copy:
 
-@kit/.claude/rules/process/workflow.md
-@kit/.claude/rules/process/handover.md
-@kit/.claude/rules/process/decisions.md
-@kit/.claude/rules/process/iterations.md
-@kit/.claude/rules/process/discipline.md
-@kit/.claude/rules/process/quality.md
-@kit/.claude/rules/process/environments.md
+@kit/common/.claude/rules/process/workflow.md
+@kit/common/.claude/rules/process/handover.md
+@kit/common/.claude/rules/process/decisions.md
+@kit/common/.claude/rules/process/iterations.md
+@kit/common/.claude/rules/process/discipline.md
+@kit/common/.claude/rules/process/quality.md
+@kit/common/.claude/rules/process/environments.md
+@kit/common/.claude/rules/process/repositories.md
 
-A chat session reads those seven files and this one before it starts work.
+A chat session reads those files and this one before it starts work.
 
 ## What this repository is
 
@@ -68,6 +69,6 @@ projects and the sessions working in them.
 ## Commands
 
 ```bash
-git config core.hooksPath kit/.githooks   # once per clone
+git config core.hooksPath kit/common/.githooks   # once per clone
 bash tests/run.sh                         # every test, as CI runs them
 ```

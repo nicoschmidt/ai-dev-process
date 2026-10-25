@@ -18,8 +18,10 @@ maintainer in one sentence; do not write an ADR nobody needs.
 
 ## Steps
 
-1. **An issue first.** Usually a spike or a feature that names the decision.
-   No issue → hand one over (`handover`).
+1. **An issue first, in the home repository** (`.ai-dev-process.conf`):
+   usually a spike or a feature that names the decision. No issue → hand one
+   over (`handover`). The ADR is written there even when the code it governs
+   lives in a member repository.
 2. **Number.** The next free number in `docs/adr/README.md`. Never reuse or
    renumber.
 3. **Write** `docs/adr/NNNN-<decision-as-statement>.md` from
@@ -38,8 +40,11 @@ maintainer in one sentence; do not write an ADR nobody needs.
 5. **Accepting** happens in the same pull request, on the maintainer's word:
    status `accepted`, the index row in `docs/adr/README.md`, and the derived
    `docs/architecture.md` — one commit.
-6. **Follow-ups become issues** before the pull request is merged: hand them
-   over in one script (`handover`).
+6. **Follow-ups become issues** before the pull request is merged, each in
+   the repository it changes: hand them over in one script (`handover`).
+7. **Members**: where the decision shapes a member repository, a follow-up
+   there updates its `docs/architecture.md` — in its own words, standing on
+   its own, without quoting private reasoning into a public repository.
 
 ## Changing a decision
 

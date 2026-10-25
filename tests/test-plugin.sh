@@ -73,10 +73,10 @@ missing = sorted(mentioned - names)
 check("no reference to a missing skill", not missing, ", ".join(missing))
 
 print("managed files")
-rules = sorted((root / "kit/.claude/rules/process").glob("*.md"))
+rules = sorted((root / "kit/common/.claude/rules/process").glob("*.md"))
 check("there are rules", len(rules) > 0)
 header = "<!-- Managed by ai-dev-process."
-for rule in rules + [root / "kit/docs/process.md"]:
+for rule in rules + [root / "kit/common/docs/process.md"]:
     check(f"{rule}: starts with the managed header", rule.read_text().startswith(header))
 claude = (root / "CLAUDE.md").read_text()
 for rule in rules:
@@ -93,8 +93,27 @@ for base in ("kit", "templates", "plugins"):
                     hits.append(f"{path}:{n}")
 check("no domain words from the project the kit came from", not hits, "; ".join(hits[:5]))
 
+print("kit and templates by role")
+# Tracked files only, as install.sh reads them: a .DS_Store is not shipped.
+import subprocess
+tracked = subprocess.run(["git", "ls-files", "kit", "templates"], capture_output=True, text=True, check=True).stdout.split()
+for sub in ("kit/common", "kit/home", "templates/all", "templates/home", "templates/member"):
+    check(f"{sub} has files", any(t.startswith(sub + "/") for t in tracked))
+roles = {"kit": ("common", "home"), "templates": ("all", "home", "member")}
+stray = [t for t in tracked if t.split("/")[1] not in roles[t.split("/")[0]]]
+check("nothing in kit/ or templates/ outside the role directories", not stray, ", ".join(stray))
+def paths(sub):
+    return {t[len(sub) + 1:] for t in tracked if t.startswith(sub + "/")}
+for role, parts in {"single/home": ("kit/common", "kit/home", "templates/all", "templates/home"),
+                    "member": ("kit/common", "templates/all", "templates/member")}.items():
+    seen, twice = set(), set()
+    for part in parts:
+        twice |= seen & paths(part)
+        seen |= paths(part)
+    check(f"role {role}: no path shipped twice", not twice, ", ".join(sorted(twice)))
+
 print("CI gates wait for every job")
-for workflow in (root / ".github/workflows/ci.yml", root / "templates/.github/workflows/ci.yml"):
+for workflow in (root / ".github/workflows/ci.yml", root / "templates/all/.github/workflows/ci.yml"):
     text = workflow.read_text()
     jobs_block = text.split("\njobs:\n", 1)[1]
     jobs = re.findall(r"^  ([a-z][a-z0-9-]*):\s*$", jobs_block, re.M)

@@ -19,11 +19,13 @@ the cost of not having it is already clear.
 
 | It is… | It goes to | Because |
 | --- | --- | --- |
-| something that must hold in every session | `kit/.claude/rules/process/` | rules load always; skills only when they match |
+| something that must hold in every session | `kit/common/.claude/rules/process/` | rules load always; skills only when they match |
 | a sequence of steps for one moment | a skill in `plugins/ai-dev-process/skills/` | it costs context only when used |
-| something a sentence keeps failing to hold | a mechanism: a script, check, hook or template under `kit/` | mechanisms hold when sessions forget |
-| different per project | a parameter in `templates/CLAUDE.md`, referenced by the rule | the rule stays true everywhere |
-| a starting point the project will own | `templates/` | copied once, never overwritten |
+| something a sentence keeps failing to hold | a mechanism: a script, check, hook or template under `kit/common/` | mechanisms hold when sessions forget |
+| needed only where ADRs and iterations live | `kit/home/` | a member repository has neither |
+| different per project, in words | a parameter in `templates/home/CLAUDE.md`, referenced by the rule | the rule stays true everywhere |
+| different per project, read by a script | a key in `templates/all/.ai-dev-process.conf` | scripts read data, not prose |
+| a starting point the project will own | `templates/all/`, `templates/home/` or `templates/member/` | copied once, never overwritten |
 
 A skill never contradicts a rule. It may say *how*; the rule says *what*.
 

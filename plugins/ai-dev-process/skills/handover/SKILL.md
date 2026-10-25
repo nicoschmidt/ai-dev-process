@@ -12,8 +12,13 @@ real values**. Never an instruction.
 
 Before writing any command, check the facts it depends on instead of
 remembering them: the remote (`git remote get-url origin`), the current branch,
-the issue number, the board's field and option names
-(`bash scripts/process/show-board.sh`).
+the issue number, the board in `.ai-dev-process.conf`, the board's field and
+option names (`bash scripts/process/show-board.sh`).
+
+In a project of several repositories (`.ai-dev-process.conf`), every block
+runs in a named repository: a `cd` to its absolute path, and `--repo` on any
+`gh` call aimed elsewhere. An issue in another repository of the project is
+created with `GH_REPO=<owner>/<repo>` in front of the script.
 
 ## A new issue
 
