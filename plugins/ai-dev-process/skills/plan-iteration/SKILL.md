@@ -30,8 +30,10 @@ the iteration box are in `CLAUDE.md` under **Process parameters**.
 5. **Scope**: the issues it needs. Missing ones are written now, ready by the
    definition of ready; open ADRs come first in the order.
 6. **Write** `docs/iterations/NNN-<short-goal>.md` from `TEMPLATE.md` and add
-   its row to the README's table, on a `docs/<epic>-plan-iteration-NNN` branch.
-   The epic issue is created first, so its number is known.
+   its row to the README's table, on a `docs/<epic>-plan-iteration-NNN` branch
+   — in the home repository. The epic issue is created there first, so its
+   number is known. Scope issues may live in any repository of the project;
+   list them as `owner/repo#n`.
 7. **Board**: the iteration needs an option in the board's `Iteration` field.
    That is a setting, not a command: *Project → ⋯ → Settings → Iteration →
    Add option*, named exactly as the issues will refer to it.

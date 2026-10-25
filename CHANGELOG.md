@@ -16,6 +16,59 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+## 0.2.0 — 2026-10-25
+
+Projects of several repositories, and the board named instead of guessed.
+No project has to change anything to upgrade from 0.1.0: a 0.1.0 lock is read
+as role `single`, the new `.ai-dev-process.conf` is created from its template,
+and the board helpers behave as before until it is filled in.
+
+### Added
+
+- **Roles** `single`, `home` and `member`, chosen with
+  `install.sh --role` and recorded in `.ai-dev-process.lock`; an upgrade keeps
+  the role. Why: a project of a public and a private repository needs one
+  place for its vision, ADRs and iterations, and the other repositories must
+  not grow their own. *From compliance-traceability.*
+- **`.claude/rules/process/repositories.md`**: what lives in the home
+  repository and what in a member, one board for all, one issue and pull
+  request per repository under an epic in the home repository, repositories
+  checked out side by side, and nothing from a private repository reaching a
+  public one. Why: those are the decisions every project of several
+  repositories would otherwise make again, and the private-to-public channels
+  are where leaks happen.
+- **`.ai-dev-process.conf`**, project-owned and the same in every repository
+  of a project: `board_owner`, `board_number`, `home_repo`, `member_repos`.
+  `gh-board.sh` reads the board from it; `PROJECT_OWNER` and `PROJECT_NUMBER`
+  still override it for one run. Why: with a second board, the helpers could
+  no longer find the board on their own, and an environment variable to set
+  before every run would be forgotten.
+- **Member templates**: a `CLAUDE.md` that imports the home repository's
+  from the checkout beside it, and a `docs/architecture.md` that stands on its
+  own. Why: a copy of the project's parameters in every repository drifts, and
+  a reader of a public member may never see the home repository.
+- **`setup-labels.sh --update`** for deliberately updating existing labels.
+
+### Changed
+
+- **`setup-labels.sh` leaves existing labels alone** by default. Why: with
+  `--force` it recoloured a project's own labels. *From
+  dnd-ai-dungeon-master, adopting 0.1.0.*
+- **The kit and the templates are split by role**: `kit/common/` and
+  `kit/home/`; `templates/all/`, `templates/home/` and `templates/member/`.
+  The paths installed in a project are unchanged. In a clone of this
+  repository the hook path is now `kit/common/.githooks`.
+- **Rules** `workflow`, `decisions`, `iterations`, `handover`, `discipline`
+  and `environments` name the home repository where it matters; a handover
+  block names the repository it runs in.
+- **Skills** `capture-idea`, `refine-backlog`, `handover`, `write-adr`,
+  `plan-iteration`, `close-iteration` and `adopt-process` work across the
+  repositories in `.ai-dev-process.conf`. `refine-backlog` gains a *move*
+  outcome, which never transfers from a private repository to a public one.
+- **`docs/adopting.md`** covers roles, projects of several repositories, and
+  existing repositories with code but no process; the claude.ai instructions
+  template lists every repository.
+
 ## 0.1.0 — 2026-10-18
 
 Extracted from dnd-ai-dungeon-master, where the process was developed over

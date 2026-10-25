@@ -70,6 +70,9 @@ check "lock names the version" "version $VERSION" "$(grep '^version ' "$p/.ai-de
 check "lock lists every kit file" "$kit_count" "$(grep -cE '^[0-9a-f]{64} ' "$p/.ai-dev-process.lock")"
 check "rules are in place" "yes" "$([ -f "$p/.claude/rules/process/workflow.md" ] && echo yes || echo no)"
 check "CLAUDE.md from the template" "yes" "$(grep -q 'Process parameters' "$p/CLAUDE.md" && echo yes || echo no)"
+check "role single by default" "role single" "$(grep '^role ' "$p/.ai-dev-process.lock")"
+check "the conf from the template" "yes" "$(grep -q '^board_number=' "$p/.ai-dev-process.conf" && echo yes || echo no)"
+check "ADR template for a single repository" "yes" "$([ -f "$p/docs/adr/0000-template.md" ] && echo yes || echo no)"
 check "hooks path is set" ".githooks" "$(git -C "$p" config core.hooksPath)"
 check "scripts stay executable" "yes" "$([ -x "$p/scripts/process/check-kit.sh" ] && echo yes || echo no)"
 out="$(bash "$p/scripts/process/check-kit.sh" 2>&1)"; code=$?
@@ -120,6 +123,56 @@ out="$(bash "$SRC/install.sh" "$p" 2>&1)"; code=$?
 check "succeeds" "0" "$code"
 check "file removed" "no" "$([ -f "$p/scripts/process/retired.sh" ] && echo yes || echo no)"
 check "lock no longer lists it" "0" "$(grep -c retired "$p/.ai-dev-process.lock")"
+
+echo "a lock from before roles existed"
+grep -v '^role ' "$p/.ai-dev-process.lock" > "$p/lock.tmp" && mv "$p/lock.tmp" "$p/.ai-dev-process.lock"
+commit_all "$p" "chore: pretend a 0.1.0 lock"
+out="$(bash "$SRC/install.sh" "$p" 2>&1)"; code=$?
+check "succeeds" "0" "$code"
+check "is read as single" "role single" "$(grep '^role ' "$p/.ai-dev-process.lock")"
+check "nothing but the lock changed" ".ai-dev-process.lock" "$(git -C "$p" status --porcelain | awk '{print $2}')"
+commit_all "$p" "chore: re-install"
+
+echo "a home repository"
+h="$(project home)"
+git -C "$h" switch -q -c chore/1-adopt
+out="$(bash "$SRC/install.sh" --role home "$h" 2>&1)"; code=$?
+check "succeeds" "0" "$code"
+check "lock names the role" "role home" "$(grep '^role ' "$h/.ai-dev-process.lock")"
+check "gets the ADR and iteration templates" "yes" "$([ -f "$h/docs/adr/0000-template.md" ] && [ -f "$h/docs/iterations/TEMPLATE.md" ] && echo yes || echo no)"
+check "gets the vision" "yes" "$([ -f "$h/docs/vision.md" ] && echo yes || echo no)"
+
+echo "a member repository"
+m="$(project member)"
+git -C "$m" switch -q -c chore/1-adopt
+out="$(bash "$SRC/install.sh" --role member "$m" 2>&1)"; code=$?
+check "succeeds" "0" "$code"
+check "lock names the role" "role member" "$(grep '^role ' "$m/.ai-dev-process.lock")"
+check "gets the rules" "yes" "$([ -f "$m/.claude/rules/process/repositories.md" ] && echo yes || echo no)"
+check "no ADR or iteration templates" "no" "$([ -e "$m/docs/adr" ] || [ -e "$m/docs/iterations" ] && echo yes || echo no)"
+check "no vision" "no" "$([ -e "$m/docs/vision.md" ] && echo yes || echo no)"
+check "the member CLAUDE.md" "1" "$(grep -c '^@\.\./' "$m/CLAUDE.md")"
+check "the conf" "yes" "$([ -f "$m/.ai-dev-process.conf" ] && echo yes || echo no)"
+check "says what to do about the import" "1" "$(grep -c 'This is a member repository' <<<"$out")"
+out="$(bash "$m/scripts/process/check-kit.sh" 2>&1)"; code=$?
+check "check-kit passes" "0" "$code"
+commit_all "$m" "chore: adopt as member"
+out="$(bash "$SRC/install.sh" "$m" 2>&1)"; code=$?
+check "an upgrade keeps the role" "role member" "$(grep '^role ' "$m/.ai-dev-process.lock")"
+check "and changes nothing" "" "$(git -C "$m" status --porcelain)"
+
+echo "changing the role"
+out="$(bash "$SRC/install.sh" --role home "$m" 2>&1)"; code=$?
+check "succeeds" "0" "$code"
+check "says so" "role: member → home" "$(grep '^role:' <<<"$out")"
+check "adds the home kit" "yes" "$([ -f "$m/docs/adr/0000-template.md" ] && echo yes || echo no)"
+commit_all "$m" "chore: become home"
+out="$(bash "$SRC/install.sh" --role member "$m" 2>&1)"; code=$?
+check "back to member removes the home kit" "no" "$([ -f "$m/docs/adr/0000-template.md" ] && echo yes || echo no)"
+
+echo "an unknown role"
+out="$(bash "$SRC/install.sh" --role guest "$m" 2>&1)"; code=$?
+check "fails" "1" "$code"
 
 rm -rf "$WORK"
 echo

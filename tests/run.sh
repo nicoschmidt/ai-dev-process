@@ -12,12 +12,12 @@ cd "$ROOT"
 failed=0
 
 echo "== syntax"
-for script in $(git ls-files '*.sh' kit/.githooks); do
+for script in $(git ls-files '*.sh' kit/common/.githooks); do
   bash -n "$script" || { echo "  bash -n failed: $script"; failed=1; }
 done
 [ "$failed" -eq 0 ] && echo "  ok    every script parses"
 
-for test in tests/test-*.sh $(git ls-files 'kit/scripts/*.sh' | grep -E '(^|/)test-[^/]*\.sh$'); do
+for test in tests/test-*.sh $(git ls-files 'kit/common/scripts/*.sh' | grep -E '(^|/)test-[^/]*\.sh$'); do
   echo
   echo "== $test"
   bash "$test" || { echo "::error file=$test::$test failed"; failed=1; }

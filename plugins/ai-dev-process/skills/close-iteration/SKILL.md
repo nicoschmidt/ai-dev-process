@@ -13,6 +13,9 @@ iteration file's **Result** and **Process learnings** sections.
 Memory is not an input; the repository is. Find the start date in the
 iteration file's history (`git log --diff-filter=A --format=%as -- docs/iterations/NNN-*.md`).
 
+Run the first two for every repository in `.ai-dev-process.conf`, with
+`--repo`; the iteration file and the epic are in the home repository.
+
 ```bash
 gh issue list --label process --state all --search "created:>=<start>" --limit 100 --json number,title,body,state
 gh pr list --state merged --search "merged:>=<start>" --limit 100 --json number,title,reviews,comments

@@ -11,7 +11,7 @@ and is meant to be reused, and improved, across projects.
 
 | Layer | What it holds | Where it lives in a project | How it gets there |
 | --- | --- | --- | --- |
-| **Rules** — must hold in every session | workflow, handover, ADRs, iterations, discipline, done | `.claude/rules/process/*.md`, loaded by Claude Code automatically | copied by `install.sh`, pinned in `.ai-dev-process.lock` |
+| **Rules** — must hold in every session | workflow, handover, ADRs, iterations, discipline, done, repositories | `.claude/rules/process/*.md`, loaded by Claude Code automatically | copied by `install.sh`, pinned in `.ai-dev-process.lock` |
 | **Procedures** — needed at a moment | capture an idea, refinement, handover, ADR, plan, retro, upstream, adopt | the `ai-dev-process` plugin's skills, in chat, Cowork and Claude Code | installed once per claude.ai account |
 | **Mechanisms** — hold when a sentence is forgotten | pre-commit hook on `main`, managed-file check in CI, `CI passed` gate, ruleset | `.githooks/`, `scripts/process/`, `.github/` | copied by `install.sh`; ruleset by hand |
 
@@ -22,16 +22,18 @@ which this repository only provides a starting template for.
 ## This repository
 
 ```
-kit/                      copied into every project on every install; managed, never edited there
-  .claude/rules/process/  the binding rules
-  .githooks/pre-commit    refuses commits on main
-  .github/ISSUE_TEMPLATE/ idea, feature, bug, spike
-  scripts/process/        board helpers, idea capture, labels, managed-file check, their tests
-  docs/                   process walkthrough, ADR and iteration templates
-templates/                copied once, where the project has no such file; project-owned afterwards
-  CLAUDE.md               with Process parameters and Process deviations
-  .github/                pull request template, CI with the `CI passed` gate
-  docs/                   vision, architecture, ADR index and ADR-0001, iterations
+kit/                      copied on every install; managed, never edited in a project
+  common/                 every repository
+    .claude/rules/process/  the binding rules
+    .githooks/pre-commit    refuses commits on main
+    .github/ISSUE_TEMPLATE/ idea, feature, bug, spike
+    scripts/process/        board helpers, idea capture, labels, managed-file check, their tests
+    docs/process.md         the walkthrough
+  home/                   the home repository (or the single one): ADR and iteration templates
+templates/                copied once, where the repository has no such file; project-owned afterwards
+  all/                    .ai-dev-process.conf, pull request template, CI with the `CI passed` gate
+  home/                   the project CLAUDE.md, vision, architecture, ADR index and ADR-0001, iterations
+  member/                 a CLAUDE.md that imports the home one, a standalone architecture.md
 plugins/ai-dev-process/   the plugin: one skill per procedure
 .claude-plugin/           the marketplace that lists the plugin
 install.sh                install or upgrade a project

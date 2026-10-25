@@ -11,11 +11,13 @@ and is gone by the next session. Refinement is a separate step
 
 ## Steps
 
-1. **Pick the repository.** The project the session is about. Use the
-   process repository named in `CLAUDE.md` (default
-   `nicoschmidt/ai-dev-process`) only when the maintainer says the idea is
-   about the process in general. When unsure, stay in the project and add
-   `process`: the retro decides later.
+1. **Pick the repository.** The one whose contents the idea is about. An
+   idea about the whole project goes to the home repository named in
+   `.ai-dev-process.conf` (`home_repo`). Use the process repository named in
+   `CLAUDE.md` (default `nicoschmidt/ai-dev-process`) only when the maintainer
+   says the idea is about the process in general. When unsure, use the home
+   repository and add `process`: the retro decides later. An idea that
+   touches private content never goes to a public repository.
 2. **Label.** Always `idea`. Add `process` when it is about the way of working
    — rules, handover, sessions, reviews, tooling — rather than the product.
 3. **Title.** One line, at most ~70 characters, in the repository language
@@ -32,7 +34,8 @@ and is gone by the next session. Refinement is a separate step
      bash scripts/process/capture-idea.sh --process "<title>" "<details>"
      ```
 
-     Without `--process` for product ideas. Where the script is missing (the
+     Without `--process` for product ideas. For another repository of the
+     project, prefix `GH_REPO=<owner>/<repo>`. Where the script is missing (the
      project has not adopted the kit yet):
      `gh issue create --repo <owner>/<repo> --label idea --title "<title>" --body "<details>"`
    - **Chat without credentials:** give one prefilled link that opens the Idea

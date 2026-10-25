@@ -93,6 +93,42 @@ what was costly.
 project-specific lesson becomes a rule for every project, or a generic one
 stays in one project's `CLAUDE.md` and is learned again elsewhere.
 
+## Projects of several repositories
+
+**One home repository for what belongs to the whole project.** Vision, ADRs,
+iterations and epics in two places become two ledgers within a week. A
+project of one repository is its own home, so the rule costs it nothing.
+*Origin: compliance-traceability, a public and a private repository with a
+third, private one created as home.*
+
+**Members import the home `CLAUDE.md` instead of copying it.** A copy of the
+parameters in every repository drifts; an import is one file. The price is
+that the repositories must be checked out beside each other, and a session
+without the home checkout is told to stop rather than work without the hard
+rules.
+
+**Nothing flows from private to public.** In a project with licensed or
+confidential material, a leak is rarely a file: it is a sentence in a commit
+message, an issue title, a pull request summary. The rule names those
+channels because they are where it happens.
+
+**A member's architecture stands on its own.** A reader of a public member
+may never see the private home repository. A summary that only links to ADRs
+there explains nothing to them.
+
+## Facts scripts read
+
+**The board is named in `.ai-dev-process.conf`, not found.** "The owner's
+only board" stopped being true the day a second project got a board, and an
+environment variable to set before every run is a rule that will be
+forgotten. Data a script needs belongs in a file the script reads, committed
+with the repository. *Origin: the second board, for compliance-traceability.*
+
+**Existing labels are left as they are.** Creating labels with `--force`
+silently recoloured a project's own labels. A setup step must not overwrite
+what the project already decided; updating is an explicit option.
+*Origin: dnd-ai-dungeon-master, adopting 0.1.0.*
+
 ## Distribution
 
 **Rules are files in the project, not plugin content.** A plugin cannot carry
