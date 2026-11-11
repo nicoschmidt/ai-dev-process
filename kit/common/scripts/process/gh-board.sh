@@ -92,7 +92,8 @@ board_connect() {
 
   if [ -z "$NUMBER" ]; then
     local projects count
-    projects="$(gh project list --owner "$OWNER" --format json)"
+    projects="$(gh project list --owner "$OWNER" --format json)" \
+      || { echo "gh project list failed for owner '$OWNER'."; return 1; }
     count="$(jq '.projects | length' <<<"$projects")"
     if [ "$count" != "1" ]; then
       echo "Found $count projects for owner '$OWNER', and no board_number in .ai-dev-process.conf."
@@ -104,8 +105,13 @@ board_connect() {
     from="the owner's only board"
   fi
 
-  PROJECT_ID="$(gh project view "$NUMBER" --owner "$OWNER" --format json | jq -r '.id')"
-  FIELDS="$(gh project field-list "$NUMBER" --owner "$OWNER" --format json)"
+  local view
+  view="$(gh project view "$NUMBER" --owner "$OWNER" --format json)" \
+    || { echo "gh project view failed for board $OWNER #$NUMBER."; return 1; }
+  PROJECT_ID="$(jq -r '.id // empty' <<<"$view")"
+  [ -n "$PROJECT_ID" ] || { echo "gh project view named no id for board $OWNER #$NUMBER."; return 1; }
+  FIELDS="$(gh project field-list "$NUMBER" --owner "$OWNER" --format json)" \
+    || { echo "gh project field-list failed for board $OWNER #$NUMBER."; return 1; }
   echo "Board: $OWNER #$NUMBER ($from)   repository: $GH_REPO"
 }
 
@@ -148,27 +154,37 @@ board_set_field() {    # board_set_field <item-id> <"A|B"> <option name>
     return 1
   fi
   gh project item-edit --id "$item" --project-id "$PROJECT_ID" \
-    --field-id "$BOARD_FIELD_ID" --single-select-option-id "$option_id" >/dev/null
+    --field-id "$BOARD_FIELD_ID" --single-select-option-id "$option_id" >/dev/null \
+    || { echo "gh project item-edit failed: $BOARD_FIELD_NAME = $option was not set."; return 1; }
   echo "         $BOARD_FIELD_NAME = $option"
 }
 
+# Its output is the item id and is captured, so its messages go to stderr.
 board_item_for_issue() {   # board_item_for_issue <issue number> -> item id
-  local n="$1" item
-  item="$(gh project item-list "$NUMBER" --owner "$OWNER" --format json --limit 500 \
-    | jq -r --argjson n "$n" \
-      'first(.items[] | select(.content.type == "Issue" and .content.number == $n) | .id) // empty')"
+  local n="$1" items added item
+  items="$(gh project item-list "$NUMBER" --owner "$OWNER" --format json --limit 500)" \
+    || { echo "gh project item-list failed for board $OWNER #$NUMBER." >&2; return 1; }
+  item="$(jq -r --argjson n "$n" \
+    'first(.items[] | select(.content.type == "Issue" and .content.number == $n) | .id) // empty' \
+    <<<"$items")"
   if [ -z "$item" ]; then
-    item="$(gh project item-add "$NUMBER" --owner "$OWNER" \
-      --url "https://github.com/$GH_REPO/issues/$n" \
-      --format json | jq -r '.id')"
+    added="$(gh project item-add "$NUMBER" --owner "$OWNER" \
+      --url "https://github.com/$GH_REPO/issues/$n" --format json)" \
+      || { echo "gh project item-add failed for #$n." >&2; return 1; }
+    item="$(jq -r '.id // empty' <<<"$added")"
   fi
+  [ -n "$item" ] || { echo "gh named no board item for #$n." >&2; return 1; }
   echo "$item"
 }
 
-# Every failure is propagated explicitly. Leaving that to `set -e` in the
-# calling script means a failed lookup is followed by a success message.
+# Every failure is propagated explicitly, every gh call included. Leaving
+# that to `set -e` in the calling script is no check at all: handovers call
+# these helpers as `create_issue … || exit 1`, and under `||`, `&&`, `if` and
+# `!` bash suspends `set -e` for everything the function runs. A failed gh
+# call was then followed by a success message.
 set_issue_fields() {   # set_issue_fields <issue number> <size> <iteration>
   local n="$1" size="$2" iteration="$3" item
+  [[ "$n" =~ ^[0-9]+$ ]] || { echo "'$n' is not an issue number; no fields set."; return 1; }
   item="$(board_item_for_issue "$n")" || return 1
   board_set_field "$item" "$FIELD_SIZE" "$size" || return 1
   board_set_field "$item" "$FIELD_ITERATION" "$iteration" || return 1
@@ -180,7 +196,14 @@ set_issue_fields() {   # set_issue_fields <issue number> <size> <iteration>
 create_issue() {
   local label="$1" size="$2" iteration="$3" title="$4" body url
   body="$(cat)"
-  url="$(gh issue create --label "$label" --title "$title" --body "$body")"
+  LAST_ISSUE_URL=""
+  LAST_ISSUE_NUMBER=""
+  url="$(gh issue create --label "$label" --title "$title" --body "$body")" \
+    || { echo "gh issue create failed: '$title' was not created."; return 1; }
+  if ! [[ "${url##*/}" =~ ^[0-9]+$ ]]; then
+    echo "gh issue create answered '$url', which names no issue; check whether '$title' exists."
+    return 1
+  fi
   LAST_ISSUE_URL="$url"
   LAST_ISSUE_NUMBER="${url##*/}"
   echo "created  $url"

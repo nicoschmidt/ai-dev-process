@@ -16,6 +16,17 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+### Fixed
+
+- **`gh-board.sh` stops when `gh` fails**, also when a handover calls it as
+  `create_issue … || exit 1`. Each helper checks every `gh` call itself, and
+  an issue url or a board item that names nothing counts as a failure; the
+  message names the step that failed. `test-gh-board.sh` gains a stand-in that
+  fails on demand at each step and asserts that the caller stops. Why: under
+  `||`, `&&`, `if` and `!` bash suspends `set -e` inside the function, so a
+  failed `gh issue create` was followed by a board item with an empty issue
+  number, fields set on it, and a reported success. *From schulplaner* (#13).
+
 ## 0.2.0 — 2026-10-25
 
 Projects of several repositories, and the board named instead of guessed.

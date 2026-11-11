@@ -17,6 +17,10 @@ ADDLOG="$(mktemp)"
 FAILURES=0
 
 gh() {
+  if [ -n "${GH_FAIL:-}" ] && [ "$1 $2" = "$GH_FAIL" ]; then
+    echo "stand-in refused: $*" >&2
+    return 1
+  fi
   case "$1 $2" in
     "project list") echo "$FIXTURE_PROJECTS" ;;
     "project view") echo '{"id":"PVT_test"}' ;;
@@ -24,7 +28,7 @@ gh() {
     "project item-list") echo "$FIXTURE_ITEMS" ;;
     "project item-add") echo "$*" >> "$ADDLOG"; echo '{"id":"ITEM_NEW"}' ;;
     "project item-edit") echo "$*" >> "$LOG" ;;
-    "issue create") echo "https://github.com/$GH_REPO/issues/17" ;;
+    "issue create") echo "${FIXTURE_ISSUE_URL-https://github.com/$GH_REPO/issues/17}" ;;
     *) echo "unexpected gh call: $*" >&2; return 1 ;;
   esac
 }
@@ -163,6 +167,51 @@ FIXTURE_ITEMS='{"items":[]}'
 out="$(create_issue "type:spike" "S" "Backlog" "A title" <<< "A body" 2>&1)"; code=$?
 check "succeeds" "0" "$code"
 check "sets both fields" "2" "$(wc -l < "$LOG" | tr -d ' ')"
+
+# Handovers call the helpers as `create_issue … || exit 1`. Under `||` bash
+# suspends `set -e` inside the function, so each gh call must be checked by
+# the helper itself. Each case runs the documented form and asserts that the
+# caller stops, and that the message names the step that failed.
+echo "gh failing, called as a handover calls the helpers"
+FIXTURE_ITEMS='{"items":[]}'
+for step in "issue create" "project item-list" "project item-add" "project item-edit"; do
+  : > "$LOG"
+  out="$(GH_FAIL="$step"
+         { create_issue "type:bug" "S" "Backlog" "A title" <<< "A body" || exit 1
+           echo "CARRIED ON"; } 2>&1)"; code=$?
+  check "$step fails: the caller exits non-zero" "1" "$code"
+  check "$step fails: the caller does not carry on" "0" "$(grep -c 'CARRIED ON' <<<"$out")"
+  check "$step fails: the message names it" "1" "$(grep -c "^gh $step failed" <<<"$out")"
+  check "$step fails: no field is reported as set" "0" "$(grep -cE '^ +(Size|Iteration) = ' <<<"$out")"
+done
+
+echo "gh answers issue create without an issue url"
+out="$(FIXTURE_ISSUE_URL=""
+       { create_issue "type:bug" "S" "Backlog" "A title" <<< "A body" || exit 1
+         echo "CARRIED ON"; } 2>&1)"; code=$?
+check "the caller exits non-zero" "1" "$code"
+check "the caller does not carry on" "0" "$(grep -c 'CARRIED ON' <<<"$out")"
+check "nothing is reported as created" "0" "$(grep -c '^created' <<<"$out")"
+
+echo "set_issue_fields without an issue number"
+: > "$LOG"
+out="$({ set_issue_fields "" S Backlog || exit 1; echo "CARRIED ON"; } 2>&1)"; code=$?
+check "the caller exits non-zero" "1" "$code"
+check "writes nothing" "" "$(cat "$LOG")"
+
+echo "gh failing while connecting to the board"
+for step in "project view" "project field-list"; do
+  out="$(GH_FAIL="$step"; { board_connect || exit 1; echo "CARRIED ON"; } 2>&1)"; code=$?
+  check "$step fails: the caller exits non-zero" "1" "$code"
+  check "$step fails: the message names it" "1" "$(grep -c "^gh $step failed" <<<"$out")"
+done
+tmp="$(mktemp -d)"
+git -C "$tmp" init -q
+out="$(cd "$tmp"; GH_FAIL="project list"; NUMBER=""
+       { board_connect || exit 1; echo "CARRIED ON"; } 2>&1)"; code=$?
+check "project list fails: the caller exits non-zero" "1" "$code"
+check "project list fails: the message names it" "1" "$(grep -c '^gh project list failed' <<<"$out")"
+rm -rf "$tmp"
 
 rm -f "$LOG" "$ADDLOG"
 echo
