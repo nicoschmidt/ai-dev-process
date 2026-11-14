@@ -21,8 +21,8 @@ where this skill and a rule disagree, the rule wins.
   done
   ```
 
-- **Chat:** chat cannot read GitHub's list pages. Hand over the command above
-  and ask the maintainer to paste its output, or to paste issue links.
+- **A session that cannot run `gh`** (a plain chat): hand over the command
+  above and ask the maintainer to paste its output, or to paste issue links.
 
 Leave `process` ideas for the retro unless the maintainer wants one now.
 
@@ -48,11 +48,12 @@ against the definition of ready:
 
 - acceptance criteria are checkable statements ("the export contains one row per
   entry, with a header"), not intentions ("make exporting better")
-- small enough for one pull request; if it is `L`, cut it into several issues
-  now and refine those instead
-- the ADR it depends on is named, or "none"; if an ADR is missing, the first
-  issue is the ADR
-- size (`S`, `M`, `L` — or whatever the board offers) and iteration are chosen
+- small enough for one pull request; if it is larger, cut it into several
+  issues now and refine those instead
+- what it needs is named, issues and ADRs (`Needs: #12, ADR-0003`), or
+  "none"; if an ADR is missing, the first issue is the ADR
+- the milestone is chosen: the current one, a later one, or none yet. Without
+  a milestone the issue is refined but not ready, and that is fine
 
 Ask about anything you would otherwise have to guess. A wrong acceptance
 criterion costs more than a question.
@@ -69,8 +70,8 @@ in their name:
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/<repository>"
-source scripts/process/gh-board.sh
-board_connect
+source scripts/process/gh-issues.sh
+issues_connect
 
 # close
 gh issue close 41 --reason "not planned" --comment "Superseded by #23."
@@ -85,18 +86,19 @@ gh issue transfer 43 nicoschmidt/ai-dev-process
 # refine
 gh issue edit 44 --title "Export the report as CSV" \
   --body-file "../issue-44-body.md" --remove-label idea --add-label type:feature
-set_issue_fields 44 S "001 First release" || exit 1
+set_milestone 44 "003 Export" || exit 1
 ```
 
 Before handing it over, run it once against a stand-in: a `gh` shell function
-that records its arguments instead of calling GitHub, and `bash -n` on the
-file. Show the maintainer the recorded calls. Then hand over, to run in the
+that records its arguments instead of calling GitHub and answers the
+milestone lookup, and `bash -n` on the file. Show the maintainer the recorded calls. Then hand over, to run in the
 project folder:
 
 ```bash
 bash refine-<YYYY-MM-DD>.sh
 ```
 
-Moving refined issues to `Ready` stays the maintainer's click on the board.
+The milestones in that script are the maintainer's decision that those issues
+are ready; the maintainer reads them before running it.
 After the script has run, the body files and the script are deleted — they
 were content, and the issues now hold it.

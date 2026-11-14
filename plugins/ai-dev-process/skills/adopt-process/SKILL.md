@@ -1,6 +1,6 @@
 ---
 name: adopt-process
-description: Install ai-dev-process in a new or existing project of one or several repositories, or upgrade a project to a newer release - roles, issue, branch, install.sh, process parameters, .ai-dev-process.conf, labels, board, ruleset and claude.ai project instructions. Use for "neues Projekt aufsetzen", "Prozess übernehmen", "adopt the process", "upgrade ai-dev-process".
+description: Install ai-dev-process in a new or existing project of one or several repositories, or upgrade a project to a newer release - roles, issue, branch, install.sh, process parameters, .ai-dev-process.conf, labels, the first milestone, ruleset and claude.ai project instructions. Use for "neues Projekt aufsetzen", "Prozess übernehmen", "adopt the process", "upgrade ai-dev-process".
 ---
 
 # Adopt or upgrade ai-dev-process
@@ -24,7 +24,7 @@ each repository.
   has code, data or its own process files), or **upgrade**
   (`.ai-dev-process.lock` names an older version).
 - **Repositories**: one, or several. With several, which one is the **home**
-  (vision, ADRs, iterations, epics — `.claude/rules/process/repositories.md`)
+  (vision, ADRs, iterations — `.claude/rules/process/repositories.md`)
   and which are **members**. A home repository may be one created only for
   that purpose. Ask; this is the maintainer's decision, and the first ADR in
   the home repository records it.
@@ -43,25 +43,21 @@ each repository.
      --branch v<version> https://github.com/nicoschmidt/ai-dev-process "$AIDP"
    ```
 
-2. **The board first**, once for the whole project, since the issues need it.
-   Hand over, with real values; the number comes from the first command's
-   output, so split the block there rather than guess it:
+2. **The first milestone**, `000 Setting up`, in every repository of the
+   project; the adoption issues go into it. There is no board to set up:
 
    ```bash
-   gh project create --owner <owner> --title "<project title>"
-   gh project field-create <number> --owner <owner> --name Size --data-type SINGLE_SELECT --single-select-options "S,M,L"
-   gh project field-create <number> --owner <owner> --name Iteration --data-type SINGLE_SELECT --single-select-options "Backlog,000 Setting up"
-   gh project link <number> --owner <owner> --repo <owner>/<repo>    # once per repository
+   source "$AIDP/kit/common/scripts/process/gh-issues.sh"
+   ensure_milestone "000 Setting up" "The process runs end to end, and the first iteration can be planned." \
+     <owner>/<home> <owner>/<member>
    ```
 
-   Then the `Status` options, a setting: *Project → ⋯ → Settings → Status* —
-   `Backlog`, `Ready`, `In progress`, `In review`, `Done`.
 3. Per repository: labels without touching existing ones
    (`GH_REPO=<owner>/<repo> bash "$AIDP/kit/common/scripts/process/setup-labels.sh"`),
-   then an issue "chore: adopt ai-dev-process vX.Y.Z" with size and
-   iteration, and once its number is known, the branch
-   `chore/<n>-ai-dev-process-<version>`. Write the handover as one script per
-   repository that reads the number from GitHub (`handover`).
+   then an issue "chore: adopt ai-dev-process vX.Y.Z" in `000 Setting up`,
+   and once its number is known, the branch
+   `chore/<n>-ai-dev-process-<version>`. Write the handover as one script in
+   the project folder that reads the number from GitHub (`handover`).
 
 ## Install
 
@@ -75,8 +71,8 @@ If the terminal was closed since step 1, fetch the release again first.
 
 Then fill in, with the maintainer — ask, do not guess:
 
-- **`.ai-dev-process.conf`**, identical in every repository: `board_owner`,
-  `board_number`, `home_repo`, `member_repos`.
+- **`.ai-dev-process.conf`**, identical in every repository: `home_repo`,
+  `member_repos`.
 - **The home repository's `CLAUDE.md`** (or the single one's): the
   Repositories section, what the project is, hard rules, process parameters,
   definition-of-done additions. Mirror the additions into
@@ -107,8 +103,8 @@ managed path:
    files, planning notes — belong in the home repository. Moving them is its
    own issue; in a public repository, check first that they hold nothing
    private.
-4. Find references that move (`grep -rn "scripts/gh-board.sh" .` and similar)
-   and update them in the same pull request.
+4. Find references to paths that move (`grep -rn "<old path>" .`) and
+   update them in the same pull request.
 
 Rehearse the whole install against a fresh clone of `main` with a stand-in
 `gh` before handing it over, and give the handover a precondition on the

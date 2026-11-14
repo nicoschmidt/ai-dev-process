@@ -24,7 +24,7 @@ and is gone by the next session. Refinement is a separate step
    (usually English, even when dictated in German). A noun phrase or an
    imperative: "Retro reads review comments of merged PRs".
 4. **Details.** One to three lines, only from what the maintainer said. Do not
-   invent acceptance criteria, size, or a solution they did not mention.
+   invent acceptance criteria, a milestone, or a solution they did not mention.
 5. **Create or hand over**, depending on the environment:
    - **Claude Code, or any session with an authenticated `gh`:** create it
      directly. A dictated idea is the one GitHub step an assistant may take

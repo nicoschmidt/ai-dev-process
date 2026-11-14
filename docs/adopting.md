@@ -17,11 +17,7 @@ it works inside a repository, it says so with `cd <repo>` and returns with
 
 ## Once per machine and account
 
-```bash
-gh auth refresh -s project      # board fields need the project scope
-```
-
-No checkout of ai-dev-process is needed: the installer is taken from the
+No checkout of ai-dev-process is needed, and no extra `gh` scope: the installer is taken from the
 release itself, fresh each time, into a temporary directory. In the terminal
 the setup runs in, pick the newest release and fetch it:
 
@@ -53,8 +49,8 @@ Every repository is installed with a role, recorded in `.ai-dev-process.lock`:
 | `home` | the project's home among several repositories | the same as `single` |
 | `member` | another repository of the project | a `CLAUDE.md` that imports the home one, a standalone `docs/architecture.md` |
 
-Every role receives `.ai-dev-process.conf`, which names the board, the home
-repository and the members, the same in every repository of the project. What
+Every role receives `.ai-dev-process.conf`, which names the home repository
+and the members, the same in every repository of the project. What
 lives where is in `.claude/rules/process/repositories.md`.
 
 ## A project of one repository
@@ -65,17 +61,13 @@ lives where is in `.claude/rules/process/repositories.md`.
    gh repo create <owner>/<repo> --public --add-readme --license mit --clone
    ```
 
-2. **The board.** The number comes from the first command's output:
+2. **The first milestone**, which the adoption issue goes into. Iterations
+   are milestones; there is no board to set up:
 
    ```bash
-   gh project create --owner <owner> --title "<project title>"
-   gh project link <number> --owner <owner> --repo <owner>/<repo>
-   gh project field-create <number> --owner <owner> --name Size --data-type SINGLE_SELECT --single-select-options "S,M,L"
-   gh project field-create <number> --owner <owner> --name Iteration --data-type SINGLE_SELECT --single-select-options "Backlog,000 Setting up"
+   gh api repos/<owner>/<repo>/milestones -f title="000 Setting up" \
+     -f description="The process runs end to end, and the first iteration can be planned."
    ```
-
-   The board's `Status` field needs the options `Backlog`, `Ready`,
-   `In progress`, `In review`, `Done`: *Project → ⋯ → Settings → Status*.
 
 3. **Labels**, so the issue forms' labels exist. Existing labels are left as
    they are:
@@ -89,7 +81,8 @@ lives where is in `.claude/rules/process/repositories.md`.
 
    ```bash
    cd <repo>
-   gh issue create --label type:chore --title "chore: adopt ai-dev-process v<version>" \
+   gh issue create --label type:chore --milestone "000 Setting up" \
+     --title "chore: adopt ai-dev-process v<version>" \
      --body "Install the kit, fill in CLAUDE.md and .ai-dev-process.conf, set up the ruleset."
    git switch -c chore/<number>-ai-dev-process-<version>
    cd ..
@@ -101,8 +94,7 @@ lives where is in `.claude/rules/process/repositories.md`.
    bash "$AIDP/install.sh" <repo>
    ```
 
-6. **Fill in** `.ai-dev-process.conf` (board, and this repository as
-   `home_repo`), `CLAUDE.md` and `docs/vision.md` — best in a session, which
+6. **Fill in** `.ai-dev-process.conf` (this repository as `home_repo`), `CLAUDE.md` and `docs/vision.md` — best in a session, which
    asks for each process parameter instead of guessing. No `<…>` may survive
    the pull request.
 
@@ -139,8 +131,8 @@ The same steps, with these differences:
 
 - **Check them out in the project folder**, under their repository names. A
   member's `CLAUDE.md` imports `../<home>/CLAUDE.md`.
-- **One board** for all of them: create it once (step 2), and run
-  `gh project link` once per repository.
+- **The milestone `000 Setting up`** in every repository (step 2), with the
+  same title.
 - **Per repository**: labels (step 3), its own adoption issue and branch
   (step 4), the install with its role, the pull request and the ruleset.
 
@@ -149,8 +141,8 @@ The same steps, with these differences:
   bash "$AIDP/install.sh" --role member <member>
   ```
 
-- **`.ai-dev-process.conf` is identical** in every repository:
-  `board_owner`, `board_number`, `home_repo`, `member_repos`.
+- **`.ai-dev-process.conf` is identical** in every repository: `home_repo`,
+  `member_repos`.
 - **The home repository** gets the project's `CLAUDE.md`, vision, ADRs and
   iterations. Its ADR-0002 records the repository layout: which repository
   holds what, which are public, and what may never move from private to
