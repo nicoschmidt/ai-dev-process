@@ -16,6 +16,13 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+## 0.3.0 — 2026-11-14
+
+Iterations are milestones, readiness is read from the issue, and nothing a
+session needs is kept on a project board. Every project has a folder, and
+handovers name no absolute path. Corrections found in review go into the
+same pull request.
+
 **Breaking:** iterations are milestones, and nothing is kept on a project
 board. A project whose `.ai-dev-process.conf` names `board_number` carries
 the board over before it installs (`docs/adopting.md`, *From a board*;
@@ -113,26 +120,26 @@ sourced `gh-board.sh` are one-offs; new ones use `gh-issues.sh`.
   were asked for in review let the retro find every one. *From
   dnd-ai-dungeon-master and schulplaner* (#6).
 
-### Removed
-
-- **`gh-board.sh`, `test-gh-board.sh`, `show-board.sh` and
-  `set-issue-fields.sh`.** The installer removes them on upgrade where they
-  are unchanged. A project's own handover scripts that source `gh-board.sh`
-  are one-offs and are written anew against `gh-issues.sh`. (#23)
-
 - **Every project has a folder, and handovers name no absolute path.**
   `repositories.md`: a project's repositories are subfolders of its project
   folder, which also holds what is handed over beside them; where the folder
   lives is named nowhere. `handover.md`: a block starts with
   `cd <repository>` from the project folder and ends with `cd ..`, a script
-  finds the folder from its own location. `adopt-process` settles the project folder first and,
-  like `docs/adopting.md`, takes the installer from a fresh clone of the
+  finds the folder from its own location. `adopt-process` settles the
+  project folder first and, like `docs/adopting.md`, takes the installer from a fresh clone of the
   release tag, so no path to a process checkout is needed. The claude.ai
   instructions template names the project folder and its repositories, not
   paths. Why: a checkout that moved after setup left stale absolute paths in
   the instructions and the handover files, and the documented
   `~/coding/<repository>` matched none of the maintainer's projects.
   *From schulplaner* (#12).
+
+### Removed
+
+- **`gh-board.sh`, `test-gh-board.sh`, `show-board.sh` and
+  `set-issue-fields.sh`.** The installer removes them on upgrade where they
+  are unchanged. A project's own handover scripts that source `gh-board.sh`
+  are one-offs and are written anew against `gh-issues.sh`. (#23)
 
 ## 0.2.1 — 2026-11-14
 
