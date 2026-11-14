@@ -16,8 +16,9 @@ the issue number, the board in `.ai-dev-process.conf`, the board's field and
 option names (`bash scripts/process/show-board.sh`).
 
 Every block runs in the project folder and names no absolute path: it starts
-with `cd <repository>` (the repository's directory in the project folder), and
-a `gh` call aimed at another repository carries `--repo`. A script lives in
+with `cd <repository>` (the repository's directory in the project folder) and
+ends with `cd ..`, so the next block starts there again; a `gh` call aimed at
+another repository carries `--repo`. A script lives in
 the project folder and starts with `cd "$(dirname "$0")/<repository>"`, so it
 runs from anywhere. An issue in another repository of the project is created
 with `GH_REPO=<owner>/<repo>` in front of the script.
@@ -72,6 +73,7 @@ unknown until it exists, so the body file is named after the issue.
    gh pr create --base main --head feat/44-export-csv \
      --title "feat: export the report as CSV" \
      --body-file "../pr-44-body.md"
+   cd ..
    ```
 
 3. Tell the maintainer what to look at first — the one place you are least
@@ -85,7 +87,8 @@ git switch main && git pull
 git branch -d feat/44-export-csv
 git push origin --delete feat/44-export-csv   # if it still exists
 git fetch --prune
-rm "../pr-44-body.md"
+cd ..
+rm pr-44-body.md
 ```
 
 ## Where a command is impossible
