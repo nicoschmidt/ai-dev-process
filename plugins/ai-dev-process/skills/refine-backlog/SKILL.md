@@ -99,6 +99,10 @@ bash refine-<YYYY-MM-DD>.sh
 ```
 
 The milestones in that script are the maintainer's decision that those issues
-are ready; the maintainer reads them before running it.
+are ready; the maintainer reads them before running it. Putting several issues
+into a milestone at once is that decision for each of them, under the
+definition of ready as it reads now: list every one with its milestone, and
+check each before it goes in. An order known from elsewhere becomes `Needs:`
+lines.
 After the script has run, the body files and the script are deleted — they
 were content, and the issues now hold it.
