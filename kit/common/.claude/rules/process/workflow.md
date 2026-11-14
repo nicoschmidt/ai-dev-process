@@ -81,3 +81,20 @@ session stops and says which item is missing.
 - Commits use Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`,
   `refactor:`, `chore:`. The message carries the reasoning — a chat window
   does not survive, a commit message does.
+
+## Corrections in review
+
+What the maintainer notices in review or while testing a pull request is
+either a refinement of its issue or an extension of it.
+
+- **A refinement** changes how the issue's goal is met: a criterion was
+  imprecise, or the assistant assumed something the maintainer did not. It
+  goes into the same branch and pull request, as a commit of its own whose
+  reasoning starts with "At the maintainer's request in review:". The amended
+  criterion is commented on the issue, so the issue shows what was built.
+  Merging code that misses the goal, only to change it again under another
+  issue, is the worse path.
+- **An extension** adds something the issue's goal did not contain. It is an
+  issue of its own (`iterations.md`, adding scope).
+- The maintainer decides which it is. When a request looks like an
+  extension, the assistant says so once, then does as decided.

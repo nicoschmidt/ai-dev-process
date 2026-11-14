@@ -101,6 +101,18 @@ sourced `gh-board.sh` are one-offs; new ones use `gh-issues.sh`.
   each project would migrate by hand and differently, and a planned
   iteration would lose its scope on the way. *From spike #16* (#25).
 
+- **Corrections in review go into the same pull request** (`workflow.md`):
+  a refinement of the issue is a commit of its own on the same branch, its
+  reasoning starting "At the maintainer's request in review:", with the
+  amended criterion commented on the issue; an extension is its own issue;
+  the maintainer decides which. The retro reads the merged pull requests'
+  commits and authors as well as their review comments (`iterations.md`).
+  The handover skill hands such a correction over; `process.md` says what to
+  do in review. Why: in a project of one maintainer the reviews carry no
+  comments, so their corrections left no trace, while commits that said they
+  were asked for in review let the retro find every one. *From
+  dnd-ai-dungeon-master and schulplaner* (#6).
+
 ### Removed
 
 - **`gh-board.sh`, `test-gh-board.sh`, `show-board.sh` and

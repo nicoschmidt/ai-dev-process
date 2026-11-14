@@ -49,7 +49,9 @@ process learnings. Its input is not memory:
 - the open and closed issues labelled `process` since the iteration started,
   in every repository of the project
 - the issues of the milestone, and the pull requests merged for them, with
-  what their reviews had to correct
+  what their reviews had to correct: the review comments, and the commits
+  with their authors, where a correction is a commit of its own
+  (`workflow.md`, corrections in review)
 - the issues that moved on, and why
 
 Each process learning is marked:

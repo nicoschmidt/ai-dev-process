@@ -82,6 +82,28 @@ unknown until it exists, so the body file is named after the issue.
 3. Tell the maintainer what to look at first — the one place you are least
    sure of.
 
+## A correction in review
+
+The pull request is open and the maintainer asks for a change
+(`workflow.md`, corrections in review). If it looks like an extension rather
+than a refinement, say so once, and do as the maintainer decides.
+
+1. Commit the correction on the same branch. Its reasoning starts with
+   "At the maintainer's request in review:" and says what changed and why.
+2. Write the amended criterion to `comment-<issue>-review.md` in the project
+   folder.
+3. Hand over, to run in the project folder:
+
+   ```bash
+   cd <repository>
+   git push
+   gh issue comment 44 --body-file ../comment-44-review.md
+   cd ..
+   rm comment-44-review.md
+   ```
+
+   A plain `git push`: the commit is added on top, nothing is rewritten.
+
 ## After the merge
 
 ```bash

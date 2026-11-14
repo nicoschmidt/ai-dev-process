@@ -104,6 +104,16 @@ setup.*
 in one sequence, which broke a branch-naming assumption twice. *Origin:
 dnd-ai-dungeon-master, setup.*
 
+**A correction in review is a commit of its own, in the same pull request.**
+In a project of one maintainer the reviews carried no comments: corrections
+were asked for in the session before anything was pushed, so the retro input
+"what reviews had to correct" was empty by construction. Where the maintainer
+committed a correction to the branch, or a commit said it was asked for in
+review, the retro found every correction from the commits alone. And merging
+code that misses the goal to fix it under another issue costs a round trip
+and hides that the issue was imprecise. *Origin: dnd-ai-dungeon-master,
+iterations 001 and 001a; schulplaner, iteration 001 (#6).*
+
 ## Decisions
 
 **ADRs before the code.** Written afterwards, the options not taken are

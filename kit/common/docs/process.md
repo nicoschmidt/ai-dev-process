@@ -92,7 +92,10 @@ a command, is a defect — say so.
    `gh pr create --body-file …` with the values filled in. Read the body first.
 6. **Review.** Tick the checklist for real. Line-level changes as review
    suggestions; questions about the goal on the issue; "is this even right" in
-   a chat session. → *The maintainer's alone.*
+   a chat session. Something that should be different before the merge goes
+   back to the session: it commits the correction to the same branch, says
+   whether it looks like an extension instead, and hands over the push and the
+   amended criterion for the issue. → *The maintainer's alone.*
 7. **Merge.** → *The maintainer's alone.* The assistant never merges.
 8. **After.** → *Handed over,* with the branch name filled in:
 
