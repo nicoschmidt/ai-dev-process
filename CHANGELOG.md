@@ -18,6 +18,15 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ### Fixed
 
+- **`create_issue` reuses an issue with exactly the same title**, open or
+  closed, instead of creating it again; it says so, and still sets the
+  issue's board fields. A handover script that failed halfway can be run
+  again as it is. The lookup lists the issues rather than searching them,
+  because the search index lags behind a create by seconds. A stand-in `gh`
+  in a project's own handover script now has to answer `gh issue list`
+  (with `[]`). Why: run twice, a handover script created every issue twice.
+  *From dnd-ai-dungeon-master* (#5).
+
 - **`gh-board.sh` stops when `gh` fails**, also when a handover calls it as
   `create_issue … || exit 1`. Each helper checks every `gh` call itself, and
   an issue url or a board item that names nothing counts as a failure; the
