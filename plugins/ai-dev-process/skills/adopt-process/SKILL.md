@@ -124,6 +124,49 @@ behaviour; say so in its body, and list everything whose meaning changed.
 Upgrade between iterations, not in the middle of one, and all repositories of
 a project to the same version.
 
+### From a board (a lock before 0.3.0, `board_number` in the conf)
+
+Since 0.3.0 an iteration is a milestone and nothing a session needs is kept
+on a board. Before installing, carry what the board holds over:
+
+1. **Read the board once**, on the maintainer's machine, the only place with
+   GraphQL. Hand over, in the project folder, with the values from
+   `.ai-dev-process.conf`:
+
+   ```bash
+   gh auth refresh -s read:project       # reading a board needs it, once
+   gh project item-list <board_number> --owner <board_owner> --format json --limit 500 \
+     --jq '.items[] | select(.status != "Done") | [.content.repository // "-", (.content.number // "draft" | tostring), .status // "-", .iteration // "-", .title] | @tsv' \
+     > board-open-items.tsv
+   ```
+
+   Ask the maintainer to paste the file, or read it from the project folder.
+2. **Propose the mapping**, one line per item, and let the maintainer decide:
+   - each iteration with open items becomes a milestone of the same title, in
+     every repository with items in it; its description is the goal sentence
+     from the iteration's epic or iteration file
+   - its open issues go into it; an epic is closed with a link to the
+     milestone instead
+   - items without an iteration get no milestone, which now means refined but
+     not ready, or still an idea
+   - an MVP epic becomes the MVP section of `docs/vision.md`, in the upgrade's
+     pull request, and is closed with a link to it
+   - a draft item becomes an `idea` issue, or is dropped
+3. **Hand over one script** in the project folder that applies it with the
+   new release's helpers (`source "$AIDP/kit/common/scripts/process/gh-issues.sh"`):
+   `ensure_milestone`, `set_milestone`, `gh issue close <epic> --comment …`.
+   Exercise it against a stand-in first; it must be safe to run twice.
+4. **In the upgrade's pull request**, in every repository: remove
+   `board_owner` and `board_number` from `.ai-dev-process.conf`, the board
+   fields row from the process parameters in `CLAUDE.md`, and any deviation
+   that names the board. An iteration file written as a plan stays as it is;
+   its Result and Process learnings are filled in when the milestone closes.
+5. **The board** may stay as the maintainer's view, grouped by milestone, or
+   be closed (`gh project close <number> --owner <owner>`). The maintainer
+   decides; no session relies on it.
+6. The claude.ai project instructions name `.ai-dev-process.conf` as "the
+   board and the repositories": update that line to "the repositories".
+
 ## The claude.ai project
 
 One claude.ai project per project, however many repositories. Hand over

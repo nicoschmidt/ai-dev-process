@@ -192,3 +192,36 @@ The role is read from the lock; a lock from 0.1.0 is read as `single`. The
 installer refuses if a managed file was edited in the repository. That edit is
 either a generic learning (→ upstream issue) or a project matter
 (→ *Process deviations* in `CLAUDE.md`); restore the file, then re-run.
+
+### From a board, to 0.3.0 or later
+
+Since 0.3.0 an iteration is a milestone, and nothing a session needs is kept
+on a project board. A project whose `.ai-dev-process.conf` still names
+`board_number` carries the board over before it installs; in a session,
+`/ai-dev-process:adopt-process` in upgrade mode walks through it.
+
+1. **Read the board's open items** once, in the project folder:
+
+   ```bash
+   gh auth refresh -s read:project       # reading a board needs it, once
+   gh project item-list <board_number> --owner <board_owner> --format json --limit 500 \
+     --jq '.items[] | select(.status != "Done") | [.content.repository // "-", (.content.number // "draft" | tostring), .status // "-", .iteration // "-", .title] | @tsv' \
+     > board-open-items.tsv
+   ```
+
+2. **Each iteration with open items becomes a milestone** of the same title,
+   in every repository with items in it, its goal in the description. Its
+   open issues go into it; its epic is closed with a link to the milestone.
+3. **Items without an iteration get no milestone**: refined but not ready,
+   or still ideas. Draft items become `idea` issues or are dropped.
+4. **An MVP epic** becomes the MVP section of `docs/vision.md` and is closed.
+5. **In the upgrade's pull request**, in every repository: `board_owner` and
+   `board_number` leave `.ai-dev-process.conf`, the board fields row leaves
+   the process parameters in `CLAUDE.md`, and so does any deviation about the
+   board. In the claude.ai project instructions, `.ai-dev-process.conf` is
+   "the repositories", no longer "the board and the repositories".
+6. **The board** may stay as your view, grouped by milestone, or be closed.
+   No session relies on it.
+
+Steps 2 to 4 are one handover script, idempotent and rehearsed against a
+stand-in before it reaches you.
