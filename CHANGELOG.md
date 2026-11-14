@@ -16,6 +16,13 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+## 0.4.0 — 2026-11-14
+
+Setting up a repository, upgrading a project and cleaning up after a merge
+are each handed over as tested scripts. No project has to change anything to
+upgrade from 0.3.0; its next upgrade is simply the first issue of its next
+milestone.
+
 ### Added
 
 - **`setup-repository.sh` and `finish-setup.sh`**, beside `install.sh`, run
