@@ -16,6 +16,13 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+## 0.2.1 — 2026-11-14
+
+The board helpers stop when `gh` fails, and a handover script can be run
+again without duplicating issues. No project has to change anything to
+upgrade from 0.2.0, except that a project's own stand-in for `gh` in a
+handover script has to answer `gh issue list` (with `[]`).
+
 ### Fixed
 
 - **`create_issue` reuses an issue with exactly the same title**, open or
