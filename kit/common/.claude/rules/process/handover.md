@@ -50,7 +50,7 @@ A handover script is exercised against a stand-in for `gh` first, and fails
 loudly rather than reporting a success it did not achieve. An environment
 without credentials has otherwise never run the script at all, and the
 maintainer discovering that by pasting it is not a review, it is a wasted
-evening. The harness is `scripts/process/test-gh-board.sh`.
+evening. The harness is `scripts/process/test-gh-issues.sh`.
 
 ## Content beside the repository, tooling inside it
 

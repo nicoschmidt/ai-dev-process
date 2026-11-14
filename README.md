@@ -27,7 +27,7 @@ kit/                      copied on every install; managed, never edited in a pr
     .claude/rules/process/  the binding rules
     .githooks/pre-commit    refuses commits on main
     .github/ISSUE_TEMPLATE/ idea, feature, bug, spike
-    scripts/process/        board helpers, idea capture, labels, managed-file check, their tests
+    scripts/process/        issue and milestone helpers, idea capture, labels, managed-file check, their tests
     docs/process.md         the walkthrough
   home/                   the home repository (or the single one): ADR and iteration templates
 templates/                copied once, where the repository has no such file; project-owned afterwards
