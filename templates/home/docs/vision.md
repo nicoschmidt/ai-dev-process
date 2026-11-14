@@ -12,6 +12,12 @@
 
 <How we will know it works — observable, not a feeling.>
 
+## MVP
+
+<The first state after which the users would choose to use the result: what
+they can do then that they cannot do today. It is not an iteration; several
+iterations, each a milestone, reach it.>
+
 ## Scope
 
 - <in>

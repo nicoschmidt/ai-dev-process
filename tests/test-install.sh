@@ -71,7 +71,7 @@ check "lock lists every kit file" "$kit_count" "$(grep -cE '^[0-9a-f]{64} ' "$p/
 check "rules are in place" "yes" "$([ -f "$p/.claude/rules/process/workflow.md" ] && echo yes || echo no)"
 check "CLAUDE.md from the template" "yes" "$(grep -q 'Process parameters' "$p/CLAUDE.md" && echo yes || echo no)"
 check "role single by default" "role single" "$(grep '^role ' "$p/.ai-dev-process.lock")"
-check "the conf from the template" "yes" "$(grep -q '^board_number=' "$p/.ai-dev-process.conf" && echo yes || echo no)"
+check "the conf from the template" "yes" "$(grep -q '^home_repo=' "$p/.ai-dev-process.conf" && echo yes || echo no)"
 check "ADR template for a single repository" "yes" "$([ -f "$p/docs/adr/0000-template.md" ] && echo yes || echo no)"
 check "hooks path is set" ".githooks" "$(git -C "$p" config core.hooksPath)"
 check "scripts stay executable" "yes" "$([ -x "$p/scripts/process/check-kit.sh" ] && echo yes || echo no)"

@@ -22,18 +22,17 @@ the field". Hand over the artefact and the command. The maintainer's work is
 reading, judging and executing — never composing. A command that still holds a
 placeholder, or a step that arrives as an instruction, is a defect.
 
-## Facts are set, judgements are not
+## Facts arrive set, on the issue
 
-- Board fields that are facts about the work — size, iteration — arrive set:
-  `gh project item-edit` in the same block as `gh issue create`, through
-  `scripts/process/gh-board.sh`.
-- **Status is the maintainer's click.** Moving a card to `Ready`, `In review`
-  or `Done` is a judgement about whether the work is there yet; handing it over
-  as a command would hand over the judgement with it.
-- The board is the one named in `.ai-dev-process.conf`; the helpers read it
-  from there. Field and option names come from the board, read at run time —
-  not from memory and not from an older script. A lookup that fails prints
-  what the board does have.
+- An issue arrives with its facts in the same block that creates it: its
+  `type:` label and, once it is refined, its milestone
+  (`gh issue create --label … --milestone …`). Nothing is set on a board.
+- **Readiness is the maintainer's judgement**, and it is made visibly: by
+  assigning the milestone in refinement, in a command the maintainer reads
+  before running it. No status is kept by hand, and none is handed over.
+- Milestone titles and labels are read from GitHub at run time, not from
+  memory and not from an older script. A lookup that fails prints what the
+  repository does have.
 - **Commands run in the project folder** (`repositories.md`) and name no
   absolute path, because where the project folder lives differs per machine
   and per developer. A copy-paste block starts with `cd <repository>` and
@@ -64,7 +63,7 @@ reusable.
   Inside, they would be a second task list next to GitHub issues. Delete them
   once they have run.
 - **Tooling is committed**, under `scripts/`. It carries no work items — it
-  reads the board, sets a field, tests itself — and it changes in the same
+  creates an issue, sets its milestone, tests itself — and it changes in the same
   reviewed commit as the rules it implements.
 
 ## The one thing the assistant does itself

@@ -16,7 +16,35 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+**Breaking:** iterations are milestones, and nothing is kept on a project
+board. A project with a board migrates on upgrade (#25).
+
 ### Changed
+
+- **Iterations are milestones, and readiness is read from the issue.**
+  `iterations.md`: an iteration is a milestone titled `NNN <short goal>`, its
+  goal in the description, the same title in every repository with issues in
+  it; iterations are cut small; scope may be added at any time, as an issue
+  in a milestone before it is built; when the goal is met the iteration ends
+  and what is open moves on, which replaces the cut order; the iteration file
+  is the retro; an MVP is a named state in `docs/vision.md`. `workflow.md`:
+  definition of ready item 5 is "in a milestone", `Needs:` names issues and
+  ADRs, the next issue is the lowest-numbered ready one in the current
+  milestone, there is no `Ready` click, ideas are never board drafts.
+  `discipline.md`: stop before implementing an issue that is not ready; raise
+  work no issue shows, and a milestone that is empty or whose goal is met.
+  `handover.md`: label and milestone arrive set, nothing on a board.
+  `environments.md`: what each kind of session can read. `repositories.md`:
+  a milestone title instead of one board, no epics. The templates
+  (`.ai-dev-process.conf` without `board_owner` and `board_number`, the
+  `CLAUDE.md` parameters without board fields, the iterations README,
+  `TEMPLATE.md` and `000-setting-up.md`, an MVP section in the vision) and
+  `process.md` follow. Size is no longer recorded. Why: a board is readable
+  only over GraphQL with the `project` scope, which chat and cloud sessions
+  lack, so its `Ready` gate could not hold where it mattered; its states
+  repeated what issues and pull requests show; and scope added to running
+  iterations went unseen. *From spike #16; dnd-ai-dungeon-master (#4, #7,
+  #9) and schulplaner (#9, #14).*
 
 - **Every project has a folder, and handovers name no absolute path.**
   `repositories.md`: a project's repositories are subfolders of its project
