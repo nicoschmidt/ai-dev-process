@@ -46,6 +46,27 @@ board. A project with a board migrates on upgrade (#25).
   iterations went unseen. *From spike #16; dnd-ai-dungeon-master (#4, #7,
   #9) and schulplaner (#9, #14).*
 
+- **`scripts/process/gh-issues.sh` replaces `gh-board.sh`**: `create_issue
+  <label> <milestone> <title>` (body on stdin; an empty milestone for none)
+  checks the milestone before anything is created, reuses an issue with the
+  same title and puts it into the milestone, and stops with the failing step
+  named, as since #5 and #13; `set_milestone <issue> <milestone>` makes a
+  refined issue ready; `ensure_milestone <title> <description> [repo …]`
+  creates an iteration's milestone in every repository of the project,
+  reusing an open one and refusing a closed one. A milestone that does not
+  exist is reported with the open ones the repository has. Nothing needs
+  the `project` scope. `test-gh-issues.sh` replaces `test-gh-board.sh`.
+  Why: the board is gone (#16), and what handovers still need is an issue
+  with its label and milestone, and a milestone in each repository. *From
+  spike #16* (#23).
+
+### Removed
+
+- **`gh-board.sh`, `test-gh-board.sh`, `show-board.sh` and
+  `set-issue-fields.sh`.** The installer removes them on upgrade where they
+  are unchanged. A project's own handover scripts that source `gh-board.sh`
+  are one-offs and are written anew against `gh-issues.sh`. (#23)
+
 - **Every project has a folder, and handovers name no absolute path.**
   `repositories.md`: a project's repositories are subfolders of its project
   folder, which also holds what is handed over beside them; where the folder
