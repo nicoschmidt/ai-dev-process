@@ -17,7 +17,25 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 ## Unreleased
 
 **Breaking:** iterations are milestones, and nothing is kept on a project
-board. A project with a board migrates on upgrade (#25).
+board. A project whose `.ai-dev-process.conf` names `board_number` carries
+the board over before it installs (`docs/adopting.md`, *From a board*;
+`adopt-process` in upgrade mode walks through it):
+
+1. read the board's open items once, on the maintainer's machine
+2. each iteration with open items becomes a milestone of the same title in
+   every repository with items in it, its goal in the description; its open
+   issues go into it, and its epic is closed with a link
+3. items without an iteration get no milestone; draft items become `idea`
+   issues or are dropped; an MVP epic becomes the MVP section of
+   `docs/vision.md`
+4. in the upgrade's pull request, every repository: `board_owner` and
+   `board_number` leave `.ai-dev-process.conf`, the board fields row and any
+   board deviation leave `CLAUDE.md`; the claude.ai instructions name the
+   conf as "the repositories"
+5. the board may stay as a view, or be closed
+
+A project without a board has nothing to carry over. Handover scripts that
+sourced `gh-board.sh` are one-offs; new ones use `gh-issues.sh`.
 
 ### Changed
 
@@ -75,6 +93,13 @@ board. A project with a board migrates on upgrade (#25).
   the first milestone, `000 Setting up`, instead of a board. `capture-idea`:
   no size. Why: skills follow the rules of #22 and the helpers of #23.
   *From spike #16* (#24).
+
+- **The upgrade from a board** in `adopt-process` (upgrade mode) and
+  `docs/adopting.md`, *From a board*: read the open items once, propose the
+  mapping, hand over one idempotent script, and clean the conf and
+  `CLAUDE.md` in the upgrade's pull request. Why: without a written path,
+  each project would migrate by hand and differently, and a planned
+  iteration would lose its scope on the way. *From spike #16* (#25).
 
 ### Removed
 

@@ -30,7 +30,7 @@ home repository first.>
    deviations
 2. every file in `.claude/rules/process/` — the binding way of working
    (ai-dev-process, version and role in `.ai-dev-process.lock`)
-3. `.ai-dev-process.conf` — the board and the repositories
+3. `.ai-dev-process.conf` — the repositories
 4. `docs/vision.md`, `docs/architecture.md`, `docs/adr/README.md`
 
 Before working in a member repository, also its `CLAUDE.md`. For where the
