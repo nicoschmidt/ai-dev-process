@@ -64,8 +64,9 @@ For each step the assistant hands over the finished artefact and the command:
 the issue text, the pull request body, the exact `git`/`gh` invocation with
 real numbers and paths. Size and iteration arrive set; status does not.
 
-Drafted bodies live beside the repository (`../pr-<n>-body.md`,
-`../create-*.sh`) and are never committed. The tooling they use lives under
+Drafted bodies live beside the repository, in the project folder
+(`pr-<n>-body.md`, `create-*.sh`), and are never committed. Every command
+handed over runs in the project folder and names no absolute path. The tooling they use lives under
 `scripts/process/`.
 
 So the maintainer's part is: read it, judge it, paste it. A command with a
@@ -91,6 +92,7 @@ a command, is a defect — say so.
 8. **After.** → *Handed over,* with the branch name filled in:
 
    ```bash
+   cd <repository>
    git switch main && git pull
    git branch -d <branch>                  # local
    git push origin --delete <branch>       # remote, if it still exists
@@ -107,8 +109,8 @@ board, the home repository and the members, and
 
 - vision, ADRs, iterations and epics are in the home repository; code and
   data, with their own issues, in the members
-- all repositories are checked out beside each other; a member's `CLAUDE.md`
-  imports the home repository's
+- all repositories are checked out in the project folder; a member's
+  `CLAUDE.md` imports the home repository's
 - one board for all of them; one issue and one pull request per repository
   for work that spans several, under an epic in the home repository
 - nothing from a private repository reaches a public one

@@ -59,8 +59,8 @@ criterion costs more than a question.
 
 ## 4. Hand over one script
 
-Write every body to a file beside the repository (`../issue-<n>-body.md`)
-and one script `../refine-<YYYY-MM-DD>.sh` that applies all outcomes in
+Write every body to a file in the project folder (`issue-<n>-body.md`)
+and one script `refine-<YYYY-MM-DD>.sh` there that applies all outcomes in
 order. Real numbers, no placeholders. In a project of several repositories,
 every `gh` call names its `--repo`, and the body files carry the repository
 in their name:
@@ -68,7 +68,7 @@ in their name:
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-cd "<absolute path of the repository>"
+cd "$(dirname "$0")/<repository>"
 source scripts/process/gh-board.sh
 board_connect
 
@@ -90,10 +90,11 @@ set_issue_fields 44 S "001 First release" || exit 1
 
 Before handing it over, run it once against a stand-in: a `gh` shell function
 that records its arguments instead of calling GitHub, and `bash -n` on the
-file. Show the maintainer the recorded calls. Then hand over:
+file. Show the maintainer the recorded calls. Then hand over, to run in the
+project folder:
 
 ```bash
-bash "../refine-<YYYY-MM-DD>.sh"
+bash refine-<YYYY-MM-DD>.sh
 ```
 
 Moving refined issues to `Ready` stays the maintainer's click on the board.

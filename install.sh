@@ -3,11 +3,12 @@
 #
 #   bash install.sh [--role single|home|member] <path to the repository>
 #
-# Run it from a checkout of this repository at the version you want, normally
-# a release tag:
+# Run it from a checkout of this repository at the version you want: a fresh
+# clone of the release tag, from the project folder the repository is in:
 #
-#   git -C ~/coding/ai-dev-process switch --detach v0.2.0
-#   bash ~/coding/ai-dev-process/install.sh ~/coding/my-project
+#   AIDP="$(mktemp -d)" && git -c advice.detachedHead=false clone -q --depth 1 \
+#     --branch v0.2.1 https://github.com/nicoschmidt/ai-dev-process "$AIDP"
+#   bash "$AIDP/install.sh" my-project
 #
 # The role says what the repository is within its project
 # (.claude/rules/process/repositories.md):
