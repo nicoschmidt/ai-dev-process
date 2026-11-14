@@ -55,75 +55,57 @@ lives where is in `.claude/rules/process/repositories.md`.
 
 ## A project of one repository
 
-1. **The repository**, with a first commit so `main` exists:
+1. **Set up the repository**, with the release fetched above:
 
    ```bash
-   gh repo create <owner>/<repo> --public --add-readme --license mit --clone
+   bash "$AIDP/setup-repository.sh" --create public <owner>/<repo>
    ```
 
-2. **The first milestone**, which the adoption issue goes into. Iterations
-   are milestones; there is no board to set up:
+   Without `--create` for a repository that exists on GitHub already;
+   `--create private` for a private one. The script does these steps, each
+   only where it is not done yet, so a run that failed is simply run again:
+
+   - **the repository**, cloned into the project folder under its name;
+     created with a README first, so `main` has a commit
+   - **the labels** the issue forms need; existing labels are left as they are
+   - **the first milestone**, `000 Setting up`, which the adoption issue goes
+     into. Iterations are milestones; there is no board to set up
+   - **the adoption issue**, "chore: adopt ai-dev-process v<version>"
+   - **the branch** `chore/<number>-ai-dev-process-<version>`, with the number
+     read from GitHub
+   - **the install** of the release
+
+   It stops before anything is committed and lists the placeholders left.
+
+2. **Fill in** `.ai-dev-process.conf` (this repository as `home_repo`),
+   `CLAUDE.md` and `docs/vision.md` — best in a session, which asks for each
+   process parameter instead of guessing.
+
+3. **Finish**: check, commit, push and open the pull request that closes the
+   adoption issue.
 
    ```bash
-   gh api repos/<owner>/<repo>/milestones -f title="000 Setting up" \
-     -f description="The process runs end to end, and the first iteration can be planned."
+   bash "$AIDP/finish-setup.sh" <repo>
    ```
 
-3. **Labels**, so the issue forms' labels exist. Existing labels are left as
-   they are:
+   It refuses while `CLAUDE.md` or `.ai-dev-process.conf` still holds a `<…>`
+   placeholder.
 
-   ```bash
-   GH_REPO=<owner>/<repo> bash "$AIDP/kit/common/scripts/process/setup-labels.sh"
-   ```
-
-4. **The adoption issue and branch.** Create the issue, read its number, then
-   branch with it:
-
-   ```bash
-   cd <repo>
-   gh issue create --label type:chore --milestone "000 Setting up" \
-     --title "chore: adopt ai-dev-process v<version>" \
-     --body "Install the kit, fill in CLAUDE.md and .ai-dev-process.conf, set up the ruleset."
-   git switch -c chore/<number>-ai-dev-process-<version>
-   cd ..
-   ```
-
-5. **Install** the release fetched above:
-
-   ```bash
-   bash "$AIDP/install.sh" <repo>
-   ```
-
-6. **Fill in** `.ai-dev-process.conf` (this repository as `home_repo`), `CLAUDE.md` and `docs/vision.md` — best in a session, which
-   asks for each process parameter instead of guessing. No `<…>` may survive
-   the pull request.
-
-7. **Commit, push, pull request**:
-
-   ```bash
-   cd <repo>
-   bash scripts/process/check-kit.sh
-   git add -A && git commit -m "chore: adopt ai-dev-process <version>"
-   git push -u origin HEAD
-   gh pr create --title "chore: adopt ai-dev-process <version>" --body "Closes #<number>"
-   cd ..
-   ```
-
-8. **Repository settings**, once CI has run on the pull request:
+4. **Repository settings**, once CI has run on the pull request:
    - `gh repo edit <owner>/<repo> --delete-branch-on-merge`
    - *Settings → Rules → Rulesets → New branch ruleset*: name `main`,
      enforcement *Active*, target *Include default branch*; enable *Require a
      pull request before merging*, *Require status checks to pass* with
      `CI passed`, and *Block force pushes*.
 
-9. **The claude.ai project.** Paste
+5. **The claude.ai project.** Paste
    [claude-project-instructions.template.md](claude-project-instructions.template.md)
    into its instructions with the values filled in (the project folder's name
    and its repositories, no absolute path), and add **no** project knowledge
    documents.
 
-10. **Every further clone** runs `git -C <repo> config core.hooksPath .githooks`
-    once.
+6. **Every further clone** runs `git -C <repo> config core.hooksPath .githooks`
+   once.
 
 ## A project of several repositories
 
@@ -131,14 +113,13 @@ The same steps, with these differences:
 
 - **Check them out in the project folder**, under their repository names. A
   member's `CLAUDE.md` imports `../<home>/CLAUDE.md`.
-- **The milestone `000 Setting up`** in every repository (step 2), with the
-  same title.
-- **Per repository**: labels (step 3), its own adoption issue and branch
-  (step 4), the install with its role, the pull request and the ruleset.
+- **Per repository**, one run of each script, with its role. Each
+  repository gets the milestone `000 Setting up` with the same title, its own
+  adoption issue and branch, its pull request and its ruleset.
 
   ```bash
-  bash "$AIDP/install.sh" --role home   <home>
-  bash "$AIDP/install.sh" --role member <member>
+  bash "$AIDP/setup-repository.sh" --role home   <owner>/<home>
+  bash "$AIDP/setup-repository.sh" --role member <owner>/<member>
   ```
 
 - **`.ai-dev-process.conf` is identical** in every repository: `home_repo`,

@@ -37,6 +37,8 @@ templates/                copied once, where the repository has no such file; pr
 plugins/ai-dev-process/   the plugin: one skill per procedure
 .claude-plugin/           the marketplace that lists the plugin
 install.sh                install or upgrade a project
+setup-repository.sh       set up a new repository up to the install: labels, milestone, issue, branch
+finish-setup.sh           check, commit, push and open the adoption pull request
 docs/                     adopting, maintaining, rationale, claude.ai project instructions
 tests/                    installer and plugin structure tests
 ```
