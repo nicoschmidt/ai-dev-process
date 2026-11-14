@@ -14,6 +14,7 @@ set -uo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 LOG="$(mktemp)"
 ADDLOG="$(mktemp)"
+ISSUES="$(mktemp)"     # the repository's issues, one "number|title" per line
 FAILURES=0
 
 gh() {
@@ -28,7 +29,16 @@ gh() {
     "project item-list") echo "$FIXTURE_ITEMS" ;;
     "project item-add") echo "$*" >> "$ADDLOG"; echo '{"id":"ITEM_NEW"}' ;;
     "project item-edit") echo "$*" >> "$LOG" ;;
-    "issue create") echo "${FIXTURE_ISSUE_URL-https://github.com/$GH_REPO/issues/17}" ;;
+    "issue list")
+      jq -R -s --arg r "$GH_REPO" 'split("\n") | map(select(length > 0) | split("|")
+        | {number: (.[0] | tonumber), title: .[1], url: "https://github.com/\($r)/issues/\(.[0])"})' "$ISSUES" ;;
+    "issue create")
+      if [ -n "${FIXTURE_ISSUE_URL+set}" ]; then echo "$FIXTURE_ISSUE_URL"; return 0; fi
+      local title="" n
+      while [ $# -gt 0 ]; do [ "$1" = "--title" ] && title="$2"; shift; done
+      n=$(( 17 + $(wc -l < "$ISSUES") ))
+      echo "$n|$title" >> "$ISSUES"
+      echo "https://github.com/$GH_REPO/issues/$n" ;;
     *) echo "unexpected gh call: $*" >&2; return 1 ;;
   esac
 }
@@ -174,8 +184,9 @@ check "sets both fields" "2" "$(wc -l < "$LOG" | tr -d ' ')"
 # caller stops, and that the message names the step that failed.
 echo "gh failing, called as a handover calls the helpers"
 FIXTURE_ITEMS='{"items":[]}'
-for step in "issue create" "project item-list" "project item-add" "project item-edit"; do
+for step in "issue list" "issue create" "project item-list" "project item-add" "project item-edit"; do
   : > "$LOG"
+  : > "$ISSUES"
   out="$(GH_FAIL="$step"
          { create_issue "type:bug" "S" "Backlog" "A title" <<< "A body" || exit 1
            echo "CARRIED ON"; } 2>&1)"; code=$?
@@ -186,6 +197,7 @@ for step in "issue create" "project item-list" "project item-add" "project item-
 done
 
 echo "gh answers issue create without an issue url"
+: > "$ISSUES"
 out="$(FIXTURE_ISSUE_URL=""
        { create_issue "type:bug" "S" "Backlog" "A title" <<< "A body" || exit 1
          echo "CARRIED ON"; } 2>&1)"; code=$?
@@ -213,7 +225,32 @@ check "project list fails: the caller exits non-zero" "1" "$code"
 check "project list fails: the message names it" "1" "$(grep -c '^gh project list failed' <<<"$out")"
 rm -rf "$tmp"
 
-rm -f "$LOG" "$ADDLOG"
+echo "an issue with the same title exists"
+: > "$LOG"
+: > "$ADDLOG"
+printf '5|Another title\n9|A title\n12|A title, longer\n' > "$ISSUES"
+FIXTURE_ITEMS='{"items":[]}'
+out="$(create_issue "type:bug" "S" "Backlog" "A title" <<< "A body"; echo "number=$LAST_ISSUE_NUMBER")"; code=$?
+check "succeeds" "0" "$code"
+check "reuses its number" "number=9" "$(grep '^number=' <<<"$out")"
+check "says so" "1" "$(grep -c '^exists .*/issues/9 .*reused' <<<"$out")"
+check "creates nothing" "3" "$(wc -l < "$ISSUES" | tr -d ' ')"
+check "still sets both fields" "2" "$(wc -l < "$LOG" | tr -d ' ')"
+
+echo "the same title twice, as a handover script run twice"
+: > "$ISSUES"
+for run in 1 2; do
+  out="$(create_issue "type:bug" "S" "Backlog" "Run me twice" <<< "A body" || exit 1)"; code=$?
+  check "run $run succeeds" "0" "$code"
+done
+check "one issue exists" "1" "$(wc -l < "$ISSUES" | tr -d ' ')"
+
+echo "several issues with that title"
+printf '30|Twin\n21|Twin\n' > "$ISSUES"
+out="$(create_issue "type:bug" "S" "Backlog" "Twin" <<< "A body"; echo "number=$LAST_ISSUE_NUMBER")"
+check "reuses the oldest" "number=21" "$(grep '^number=' <<<"$out")"
+
+rm -f "$LOG" "$ADDLOG" "$ISSUES"
 echo
 if [ "$FAILURES" -eq 0 ]; then
   echo "all checks passed"

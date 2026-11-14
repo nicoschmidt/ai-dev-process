@@ -193,11 +193,29 @@ set_issue_fields() {   # set_issue_fields <issue number> <size> <iteration>
 
 # create_issue <label> <size> <iteration> <title>, body on stdin.
 # Status is never set here: it is the maintainer's judgement, not a fact.
+#
+# An issue with exactly this title, open or closed, is reused instead of
+# created again, and its fields are set. A handover script that failed
+# halfway can then simply be run again; run twice, it once created every
+# issue twice. The lookup lists the issues rather than searching them,
+# because the search index lags behind a create by seconds.
 create_issue() {
-  local label="$1" size="$2" iteration="$3" title="$4" body url
+  local label="$1" size="$2" iteration="$3" title="$4" body url issues existing
   body="$(cat)"
   LAST_ISSUE_URL=""
   LAST_ISSUE_NUMBER=""
+  issues="$(gh issue list --state all --limit 1000 --json number,title,url)" \
+    || { echo "gh issue list failed: could not check whether '$title' exists."; return 1; }
+  existing="$(jq -r --arg t "$title" \
+    '[.[] | select(.title == $t)] | sort_by(.number) | first | .url // empty' <<<"$issues")" \
+    || { echo "gh issue list answered something that is not a list of issues."; return 1; }
+  if [ -n "$existing" ]; then
+    LAST_ISSUE_URL="$existing"
+    LAST_ISSUE_NUMBER="${existing##*/}"
+    echo "exists   $existing   (same title; reused, not created again)"
+    set_issue_fields "$LAST_ISSUE_NUMBER" "$size" "$iteration" || return 1
+    return 0
+  fi
   url="$(gh issue create --label "$label" --title "$title" --body "$body")" \
     || { echo "gh issue create failed: '$title' was not created."; return 1; }
   if ! [[ "${url##*/}" =~ ^[0-9]+$ ]]; then

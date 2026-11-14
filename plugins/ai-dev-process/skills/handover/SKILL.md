@@ -37,9 +37,12 @@ created with `GH_REPO=<owner>/<repo>` in front of the script.
    echo "issue: #$LAST_ISSUE_NUMBER"
    ```
 
-   Several issues go in one script, in dependency order.
-3. Exercise it against a stand-in `gh` (a function recording its arguments)
-   and `bash -n` before handing it over.
+   Several issues go in one script, in dependency order. `create_issue`
+   reuses an issue whose title is exactly the same, open or closed, so a
+   script that failed halfway is run again as it is.
+3. Exercise it against a stand-in `gh` (a function recording its arguments;
+   it answers `gh issue list` with `[]`) and `bash -n` before handing it
+   over.
 4. Hand over:
 
    ```bash
