@@ -25,9 +25,11 @@ has not felt the pain. Every upstream issue states:
 
 ## Hand it over
 
-Either transfer the captured issue, then add the missing sections:
+Either transfer the captured issue, then add the missing sections. Both
+blocks run in the project folder, with the body in a file there:
 
 ```bash
+cd <repository>
 gh issue transfer 43 nicoschmidt/ai-dev-process
 gh issue edit <new number> --repo nicoschmidt/ai-dev-process \
   --body-file "../upstream-43-body.md" --add-label "from:<project repository name>"
@@ -37,12 +39,13 @@ The new number is printed by the transfer; the script reads it from there
 instead of guessing. Or draft a new one:
 
 ```bash
+cd <repository>
 gh label create "from:<project repository name>" --repo nicoschmidt/ai-dev-process --color BFD4F2 --force
 gh issue create --repo nicoschmidt/ai-dev-process --label process \
   --label "from:<project repository name>" \
   --title "<the change, as a statement>" --body-file "../upstream-<slug>-body.md"
 ```
 
-As always: real values, exercised against a stand-in, bodies beside the
-repository. The project keeps no copy of the learning — the link in its retro
+As always: real values, exercised against a stand-in, bodies in the project
+folder, no absolute path. The project keeps no copy of the learning — the link in its retro
 is enough.

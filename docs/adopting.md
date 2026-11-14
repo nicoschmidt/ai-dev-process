@@ -5,12 +5,32 @@ existing repository, and an upgrade. In a session,
 `/ai-dev-process:adopt-process` walks through the same steps and hands over
 every command with the values filled in; this page is what it follows.
 
+## The project folder
+
+Every project has a folder of its own, also a project of one repository. Its
+repositories are subfolders under their repository names, and what is handed
+over beside them (issue and pull request bodies, one-off scripts) lives there
+too. Where the project folder lives is up to you; nothing in the process names
+it. **Commands on this page start in the project folder**; where they work
+inside a repository, they say so with `cd <repo>`.
+
 ## Once per machine and account
 
 ```bash
-git clone https://github.com/nicoschmidt/ai-dev-process.git ~/coding/ai-dev-process
 gh auth refresh -s project      # board fields need the project scope
 ```
+
+No checkout of ai-dev-process is needed: the installer is taken from the
+release itself, fresh each time, into a temporary directory. In the terminal
+the setup runs in, pick the newest release and fetch it:
+
+```bash
+git ls-remote --tags --refs https://github.com/nicoschmidt/ai-dev-process | sed 's|.*/||' | sort -V | tail -3
+AIDP="$(mktemp -d)" && git -c advice.detachedHead=false clone -q --depth 1 \
+  --branch v<version> https://github.com/nicoschmidt/ai-dev-process "$AIDP"
+```
+
+`$AIDP` lasts as long as that terminal; in a new one, fetch again.
 
 The plugin, once per claude.ai account: *Customize → Plugins → Add → Add
 marketplace* → `nicoschmidt/ai-dev-process` → add **ai-dev-process** → turn
@@ -61,24 +81,22 @@ lives where is in `.claude/rules/process/repositories.md`.
    they are:
 
    ```bash
-   GH_REPO=<owner>/<repo> bash ~/coding/ai-dev-process/kit/common/scripts/process/setup-labels.sh
+   GH_REPO=<owner>/<repo> bash "$AIDP/kit/common/scripts/process/setup-labels.sh"
    ```
 
 4. **The adoption issue and branch.** Create the issue, read its number, then
    branch with it:
 
    ```bash
-   gh issue create --label type:chore --title "chore: adopt ai-dev-process v0.2.0" \
+   gh issue create --label type:chore --title "chore: adopt ai-dev-process v<version>" \
      --body "Install the kit, fill in CLAUDE.md and .ai-dev-process.conf, set up the ruleset."
-   git switch -c chore/<number>-ai-dev-process-0.2.0
+   git switch -c chore/<number>-ai-dev-process-<version>
    ```
 
-5. **Install**, at a release tag:
+5. **Install** the release fetched above, from the repository:
 
    ```bash
-   git -C ~/coding/ai-dev-process fetch --tags
-   git -C ~/coding/ai-dev-process switch --detach v0.2.0
-   bash ~/coding/ai-dev-process/install.sh "$PWD"
+   bash "$AIDP/install.sh" .
    ```
 
 6. **Fill in** `.ai-dev-process.conf` (board, and this repository as
@@ -90,9 +108,9 @@ lives where is in `.claude/rules/process/repositories.md`.
 
    ```bash
    bash scripts/process/check-kit.sh
-   git add -A && git commit -m "chore: adopt ai-dev-process 0.2.0"
+   git add -A && git commit -m "chore: adopt ai-dev-process <version>"
    git push -u origin HEAD
-   gh pr create --title "chore: adopt ai-dev-process 0.2.0" --body "Closes #<number>"
+   gh pr create --title "chore: adopt ai-dev-process <version>" --body "Closes #<number>"
    ```
 
 8. **Repository settings**, once CI has run on the pull request:
@@ -104,8 +122,9 @@ lives where is in `.claude/rules/process/repositories.md`.
 
 9. **The claude.ai project.** Paste
    [claude-project-instructions.template.md](claude-project-instructions.template.md)
-   into its instructions with the values filled in, and add **no** project
-   knowledge documents.
+   into its instructions with the values filled in (the project folder's name
+   and its repositories, no absolute path), and add **no** project knowledge
+   documents.
 
 10. **Every further clone** runs `git config core.hooksPath .githooks` once.
 
@@ -113,16 +132,16 @@ lives where is in `.claude/rules/process/repositories.md`.
 
 The same steps, with these differences:
 
-- **Check them out beside each other**, under their repository names, in one
-  parent directory. A member's `CLAUDE.md` imports `../<home>/CLAUDE.md`.
+- **Check them out in the project folder**, under their repository names. A
+  member's `CLAUDE.md` imports `../<home>/CLAUDE.md`.
 - **One board** for all of them: create it once (step 2), and run
   `gh project link` once per repository.
 - **Per repository**: labels (step 3), its own adoption issue and branch
   (step 4), the install with its role, the pull request and the ruleset.
 
   ```bash
-  bash ~/coding/ai-dev-process/install.sh --role home   ~/coding/<parent>/<home>
-  bash ~/coding/ai-dev-process/install.sh --role member ~/coding/<parent>/<member>
+  bash "$AIDP/install.sh" --role home   <home>
+  bash "$AIDP/install.sh" --role member <member>
   ```
 
 - **`.ai-dev-process.conf` is identical** in every repository:
@@ -162,19 +181,14 @@ change meaning is listed in its body.
 
 ## An upgrade
 
-Between iterations, and every repository of a project to the same version:
+Between iterations, and every repository of a project to the same version.
+Fetch the new release as in [Once per machine](#once-per-machine-and-account),
+and read `"$AIDP/CHANGELOG.md"` from the project's version (in
+`.ai-dev-process.lock`) to the new one. Then, with an issue and its branch in
+each repository, in the project folder:
 
 ```bash
-git -C ~/coding/ai-dev-process fetch --tags
-git -C ~/coding/ai-dev-process tag --sort=-v:refname | head -3
-```
-
-Read `CHANGELOG.md` from the project's version (in `.ai-dev-process.lock`) to
-the new one. Then, with an issue and its branch in each repository:
-
-```bash
-git -C ~/coding/ai-dev-process switch --detach v<new>
-bash ~/coding/ai-dev-process/install.sh "<repository>"
+bash "$AIDP/install.sh" <repository>
 ```
 
 The role is read from the lock; a lock from 0.1.0 is read as `single`. The

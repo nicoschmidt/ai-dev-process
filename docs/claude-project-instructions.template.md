@@ -11,12 +11,17 @@ and in GitHub issues, and a summary here would be wrong within days.
 
 ## Repositories
 
-<For a project of one repository, one line. For several: one line each, the
-home repository first, all checked out side by side.>
+The repositories are subfolders of the project folder **`<project folder
+name>`**, under their repository names; handed-over files live in that folder
+too. Commands run in the project folder and name no absolute path: where the
+folder lives differs per machine.
 
-- **Home:** `<absolute local path>` — https://github.com/<owner>/<repo>
+<For a project of one repository, one line. For several: one line each, the
+home repository first.>
+
+- **Home:** `<repository directory>` — https://github.com/<owner>/<repo>
   (<public|private>): <vision, ADRs, iterations, epics; or: the whole project>
-- **Member:** `<absolute local path>` — https://github.com/<owner>/<repo>
+- **Member:** `<repository directory>` — https://github.com/<owner>/<repo>
   (<public|private>): <what it holds>
 
 ## Read these first, in the home repository
@@ -42,8 +47,9 @@ The files above are the full and binding version.
 - **GitHub issues are the only task list.** Ideas are captured as issues
   labelled `idea` (skill `capture-idea`), never in a file.
 - **Every manual step is handed over ready to run:** the finished text in a
-  file beside the repository, and the exact command with real values, naming
-  the repository it runs in. Never "create an issue" — hand over the issue and
+  file in the project folder, and the exact command with real values, run in
+  the project folder and naming the repository it runs in (`cd <repository>`),
+  never an absolute path. Never "create an issue" — hand over the issue and
   the command.
 - **Decisions that are expensive to reverse are ADRs** in the home
   repository, written before the code.

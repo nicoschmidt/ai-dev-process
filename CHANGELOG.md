@@ -16,6 +16,22 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+### Changed
+
+- **Every project has a folder, and handovers name no absolute path.**
+  `repositories.md`: a project's repositories are subfolders of its project
+  folder, which also holds what is handed over beside them; where the folder
+  lives is named nowhere. `handover.md`: a block starts with
+  `cd <repository>` from the project folder, a script finds the folder from
+  its own location. `adopt-process` settles the project folder first and,
+  like `docs/adopting.md`, takes the installer from a fresh clone of the
+  release tag, so no path to a process checkout is needed. The claude.ai
+  instructions template names the project folder and its repositories, not
+  paths. Why: a checkout that moved after setup left stale absolute paths in
+  the instructions and the handover files, and the documented
+  `~/coding/<repository>` matched none of the maintainer's projects.
+  *From schulplaner* (#12).
+
 ## 0.2.1 — 2026-11-14
 
 The board helpers stop when `gh` fails, and a handover script can be run

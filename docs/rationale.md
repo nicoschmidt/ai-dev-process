@@ -64,6 +64,17 @@ rules it implements, cannot be tested in CI, and gets rewritten — with guessed
 names — by the next session that does not find it. *Origin:
 dnd-ai-dungeon-master, iteration 001.*
 
+**Every project has a folder, and nothing names an absolute path.** A
+checkout moved a day after setup, and the claude.ai instructions and the
+handover files still named the old path. The documented `~/coding/<repository>`
+matched none of the maintainer's projects, which each live in a folder of
+their own with the repositories inside; and where that folder lives is one
+developer's habit, not a fact of the project. Commands relative to the
+project folder, and scripts that find it from their own location, are true on
+every machine. The project folder is also where content beside the repository
+belongs, instead of loose between other projects. *Origin: schulplaner,
+setup.*
+
 **Numbers are read, not predicted.** GitHub numbers issues and pull requests
 in one sequence, which broke a branch-naming assumption twice. *Origin:
 dnd-ai-dungeon-master, setup.*

@@ -25,13 +25,21 @@ is in `.ai-dev-process.lock`.
 - **The board** is one, shared by all repositories of the project. Size and
   iteration are the board's fields, whichever repository an issue is in.
 
+## The project folder
+
+Every project has a folder of its own, a project of one repository too. Its
+repositories are checked out in it, under their repository names, and what
+is handed over beside a repository (bodies, one-off scripts) lives there as
+well. Where the project folder itself lives is the maintainer's choice, and no
+committed file, template or instruction names it: it differs per machine and
+per developer. So nothing names an absolute path; commands run in the project
+folder (`handover.md`).
+
 ## Working across repositories
 
-- All repositories of a project are checked out beside each other, in one
-  parent directory, under their repository names. A member's `CLAUDE.md`
-  imports `../<home>/CLAUDE.md` from there. If the home repository is not
-  checked out, the project's hard rules are missing from the session: stop
-  and say so.
+- A member's `CLAUDE.md` imports `../<home>/CLAUDE.md` from the project
+  folder. If the home repository is not checked out there, the project's hard
+  rules are missing from the session: stop and say so.
 - Issue numbers count per repository. A branch carries the number of an issue
   in its own repository. Across repositories, refer to `owner/repo#n`.
 - Work that changes several repositories is one issue per repository, each

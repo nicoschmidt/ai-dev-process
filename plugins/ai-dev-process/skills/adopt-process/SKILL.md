@@ -5,14 +5,21 @@ description: Install ai-dev-process in a new or existing project of one or sever
 
 # Adopt or upgrade ai-dev-process
 
-The installer is `install.sh` in a local checkout of
-`nicoschmidt/ai-dev-process`, normally `~/coding/ai-dev-process`. The full
-human-facing guide is its `docs/adopting.md`; this skill is the assistant's
-side of it. Adopting is work like any other: issue, branch, pull request — in
+The installer is `install.sh` of `nicoschmidt/ai-dev-process`, taken from a
+fresh clone of the release tag in a temporary directory. That installs
+exactly the release, needs no path to a checkout of the process, and leaves
+the maintainer's own checkout alone. The full human-facing guide is
+`docs/adopting.md` there; this skill is the assistant's side of it. Adopting is work like any other: issue, branch, pull request — in
 each repository.
 
 ## Decide first
 
+- **The project folder**: its name (by default the project's name, as in the
+  claude.ai project) and the repositories in it, under their repository
+  names. Settle it before anything is written that names a repository's
+  directory. Every command below runs in the project folder; none names an
+  absolute path, because where that folder lives is the maintainer's
+  (`repositories.md`).
 - **Mode**: **new** (the repository is empty or nearly so), **existing** (it
   has code, data or its own process files), or **upgrade**
   (`.ai-dev-process.lock` names an older version).
@@ -27,8 +34,15 @@ each repository.
 
 ## Common first steps
 
-1. Fetch and pick the release in the process checkout:
-   `git -C ~/coding/ai-dev-process fetch --tags && git -C ~/coding/ai-dev-process tag --sort=-v:refname | head -3`
+1. Pick the release, and fetch it into a temporary directory, in the
+   terminal the rest of the handover runs in:
+
+   ```bash
+   git ls-remote --tags --refs https://github.com/nicoschmidt/ai-dev-process | sed 's|.*/||' | sort -V | tail -3
+   AIDP="$(mktemp -d)" && git -c advice.detachedHead=false clone -q --depth 1 \
+     --branch v<version> https://github.com/nicoschmidt/ai-dev-process "$AIDP"
+   ```
+
 2. **The board first**, once for the whole project, since the issues need it.
    Hand over, with real values; the number comes from the first command's
    output, so split the block there rather than guess it:
@@ -43,7 +57,7 @@ each repository.
    Then the `Status` options, a setting: *Project → ⋯ → Settings → Status* —
    `Backlog`, `Ready`, `In progress`, `In review`, `Done`.
 3. Per repository: labels without touching existing ones
-   (`GH_REPO=<owner>/<repo> bash ~/coding/ai-dev-process/kit/common/scripts/process/setup-labels.sh`),
+   (`GH_REPO=<owner>/<repo> bash "$AIDP/kit/common/scripts/process/setup-labels.sh"`),
    then an issue "chore: adopt ai-dev-process vX.Y.Z" with size and
    iteration, and once its number is known, the branch
    `chore/<n>-ai-dev-process-<version>`. Write the handover as one script per
@@ -51,12 +65,13 @@ each repository.
 
 ## Install
 
-Per repository, on its branch, with its role:
+Per repository, on its branch, with its role, in the project folder:
 
 ```bash
-git -C ~/coding/ai-dev-process switch --detach vX.Y.Z
-bash ~/coding/ai-dev-process/install.sh --role <single|home|member> <repository>
+bash "$AIDP/install.sh" --role <single|home|member> <repository>
 ```
+
+If the terminal was closed since step 1, fetch the release again first.
 
 Then fill in, with the maintainer — ask, do not guess:
 
@@ -82,7 +97,7 @@ Before running the installer, take inventory — it overwrites any file at a
 managed path:
 
 1. For each managed path
-   (`git -C ~/coding/ai-dev-process ls-files kit | sed 's|^kit/[a-z]*/||'`)
+   (`git -C "$AIDP" ls-files kit | sed 's|^kit/[a-z]*/||'`)
    that exists in the repository, diff it against the kit.
 2. Classify every difference, and every piece of the repository's own process
    text outside managed paths (an old `CLAUDE.md`, `docs/process.md`,
@@ -102,8 +117,8 @@ behaviour; say so in its body, and list everything whose meaning changed.
 
 ## upgrade
 
-1. Read `CHANGELOG.md` in the process checkout between the two versions, and
-   say what each change means for this project.
+1. Fetch the new release (step 1 above), read `"$AIDP/CHANGELOG.md"` between
+   the two versions, and say what each change means for this project.
 2. Install on the branch, in every repository of the project; the role comes
    from the lock. The installer refuses if a managed file was edited; resolve
    that first (upstream issue or deviation), never by forcing.
@@ -116,6 +131,7 @@ a project to the same version.
 ## The claude.ai project
 
 One claude.ai project per project, however many repositories. Hand over
-`docs/claude-project-instructions.template.md` from the process checkout with
-every value filled in, including every repository and which one is home. No
+`docs/claude-project-instructions.template.md` from the release with every
+value filled in: the project folder's name, every repository in it, and which
+one is home. No absolute path. No
 project knowledge documents: the repositories are the source.
