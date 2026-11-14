@@ -108,13 +108,15 @@ than a refinement, say so once, and do as the maintainer decides.
 
 ```bash
 cd <repository>
-git switch main && git pull
-git branch -d feat/44-export-csv
-git push origin --delete feat/44-export-csv   # if it still exists
-git fetch --prune
+bash scripts/process/after-merge.sh feat/44-export-csv
 cd ..
-rm pr-44-body.md
 ```
+
+It switches to `main` and fast-forwards it, deletes the branch locally and
+on the remote only where it is at the merged pull request's last commit, and
+removes `pr-44-body.md` from the project folder. Whatever it keeps, it says
+why. It works under every merge method; `git branch -d` does not after a
+rebase or squash merge.
 
 ## Where a command is impossible
 
