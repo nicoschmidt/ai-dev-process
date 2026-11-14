@@ -1,6 +1,6 @@
 ---
 name: handover
-description: Hand a GitHub-facing step to the maintainer ready to run - a new issue with its board fields set, a pull request after work on a branch, or the cleanup after a merge. Use whenever work needs to reach GitHub, before saying "create an issue" or "open a PR", which are never acceptable on their own.
+description: Hand a GitHub-facing step to the maintainer ready to run - a new issue with its label and milestone set, a pull request after work on a branch, or the cleanup after a merge. Use whenever work needs to reach GitHub, before saying "create an issue" or "open a PR", which are never acceptable on their own.
 ---
 
 # Handover
@@ -12,8 +12,9 @@ real values**. Never an instruction.
 
 Before writing any command, check the facts it depends on instead of
 remembering them: the remote (`git remote get-url origin`), the current branch,
-the issue number, the board in `.ai-dev-process.conf`, the board's field and
-option names (`bash scripts/process/show-board.sh`).
+the issue number, the milestone titles
+(`gh api "repos/<owner>/<repo>/milestones" --jq '.[].title'`), the
+repositories in `.ai-dev-process.conf`.
 
 Every block runs in the project folder and names no absolute path: it starts
 with `cd <repository>` (the repository's directory in the project folder) and
@@ -33,27 +34,29 @@ with `GH_REPO=<owner>/<repo>` in front of the script.
    #!/usr/bin/env bash
    set -euo pipefail
    cd "$(dirname "$0")/<repository>"
-   source scripts/process/gh-board.sh
-   board_connect
-   create_issue "type:feature" "M" "001 First release" \
-     "Export the report as CSV" < "../issue-export-csv-body.md" || exit 1
+   source scripts/process/gh-issues.sh
+   issues_connect
+   create_issue "type:feature" "003 Export" "Export the report as CSV" \
+     < ../issue-export-csv-body.md || exit 1
    echo "issue: #$LAST_ISSUE_NUMBER"
    ```
 
    Several issues go in one script, in dependency order. `create_issue`
    reuses an issue whose title is exactly the same, open or closed, so a
    script that failed halfway is run again as it is.
+   The milestone is checked before anything is created. An idea, or an issue
+   not planned yet, gets `""` instead of a milestone.
 3. Exercise it against a stand-in `gh` (a function recording its arguments;
-   it answers `gh issue list` with `[]`) and `bash -n` before handing it
-   over.
+   it answers `gh issue list` with `[]` and the milestone lookup with the
+   milestone) and `bash -n` before handing it over.
 4. Hand over, to run in the project folder:
 
    ```bash
-   gh auth refresh -s project   # once per machine; gh auth login does not grant it
    bash create-export-csv.sh
    ```
 
-Status is never set. Moving the card to `Ready` is the maintainer's click.
+The milestone is the maintainer's decision that the issue is ready. Say which
+milestone each issue goes into, so it is read before it is run.
 
 ## A pull request
 
@@ -77,7 +80,7 @@ unknown until it exists, so the body file is named after the issue.
    ```
 
 3. Tell the maintainer what to look at first — the one place you are least
-   sure of. Then the card goes to `In review` by their click.
+   sure of.
 
 ## After the merge
 

@@ -60,6 +60,22 @@ board. A project with a board migrates on upgrade (#25).
   with its label and milestone, and a milestone in each repository. *From
   spike #16* (#23).
 
+- **The skills plan, refine and close iterations with milestones.**
+  `plan-iteration`: the plan is a milestone in every repository with issues
+  in it, its goal in the description, handed over as one script with
+  `ensure_milestone`, `create_issue` and `set_milestone`; no plan file, no
+  epic, no board option, no cut order. `refine-backlog`: refining chooses a
+  milestone, or none yet; `set_milestone` replaces `set_issue_fields`.
+  `close-iteration`: the evidence is the milestone's issues, the process
+  issues, and the merged pull requests with their reviews, commits and
+  authors, plus what was added while it ran; open issues move on, the
+  milestone is closed in every repository, and the retro's issue is created
+  by the handover, which then renames the branch. `handover`: examples with
+  `gh-issues.sh`, no `project` scope. `adopt-process` and `docs/adopting.md`:
+  the first milestone, `000 Setting up`, instead of a board. `capture-idea`:
+  no size. Why: skills follow the rules of #22 and the helpers of #23.
+  *From spike #16* (#24).
+
 ### Removed
 
 - **`gh-board.sh`, `test-gh-board.sh`, `show-board.sh` and
