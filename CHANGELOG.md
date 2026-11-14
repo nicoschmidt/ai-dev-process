@@ -18,6 +18,20 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ### Added
 
+- **`setup-repository.sh` and `finish-setup.sh`**, beside `install.sh`, run
+  from the fresh clone of the release in the project folder. The first sets
+  up one repository: clone (or `--create public|private`), labels, the
+  milestone `000 Setting up`, the adoption issue in it, the branch with the
+  number read from GitHub, and the install with its role; it stops before any
+  commit. The second refuses while `CLAUDE.md` or `.ai-dev-process.conf`
+  holds a placeholder, then checks, commits, pushes and opens the pull
+  request. Both reuse what exists, so a failed run is run again.
+  `adopt-process` hands over these two commands instead of composing the
+  steps, and `docs/adopting.md` explains what they do. Why: the steps depend
+  on numbers only GitHub knows, and composing them by hand was the
+  error-prone part of every setup; as two scripts they ran on the first
+  attempt. *From schulplaner* (#11).
+
 - **`scripts/process/after-merge.sh <branch>`** cleans up after a merge:
   switches to `main` and fast-forwards it to `origin/main`, deletes the
   branch locally and on the remote only where it is at the merged pull

@@ -43,33 +43,24 @@ each repository.
      --branch v<version> https://github.com/nicoschmidt/ai-dev-process "$AIDP"
    ```
 
-2. **The first milestone**, `000 Setting up`, in every repository of the
-   project; the adoption issues go into it. There is no board to set up:
+2. **Per repository, hand over one command** to run in the project folder
+   (home first), with real values:
 
    ```bash
-   source "$AIDP/kit/common/scripts/process/gh-issues.sh"
-   ensure_milestone "000 Setting up" "The process runs end to end, and the first iteration can be planned." \
-     <owner>/<home> <owner>/<member>
+   bash "$AIDP/setup-repository.sh" --role <single|home|member> <owner>/<repo>
    ```
 
-3. Per repository: labels without touching existing ones
-   (`GH_REPO=<owner>/<repo> bash "$AIDP/kit/common/scripts/process/setup-labels.sh"`),
-   then an issue "chore: adopt ai-dev-process vX.Y.Z" in `000 Setting up`,
-   and once its number is known, the branch
-   `chore/<n>-ai-dev-process-<version>`. Write the handover as one script in
-   the project folder that reads the number from GitHub (`handover`).
+   Add `--create public` or `--create private` for a repository that does not
+   exist yet. The script clones the repository into the project folder, creates
+   the labels, the milestone `000 Setting up`, the adoption issue in it and
+   the branch carrying the issue's number, and installs the release. Every
+   step checks what exists, so a failed run is run again. It stops before any
+   commit and lists the placeholders left. Do not compose these steps by hand;
+   the script is tested, and `docs/adopting.md` explains what it does.
 
-## Install
+## Fill in
 
-Per repository, on its branch, with its role, in the project folder:
-
-```bash
-bash "$AIDP/install.sh" --role <single|home|member> <repository>
-```
-
-If the terminal was closed since step 1, fetch the release again first.
-
-Then fill in, with the maintainer — ask, do not guess:
+With the maintainer — ask, do not guess:
 
 - **`.ai-dev-process.conf`**, identical in every repository: `home_repo`,
   `member_repos`.
@@ -84,13 +75,22 @@ Then fill in, with the maintainer — ask, do not guess:
   honest placeholders rather than invented text. Date ADR-0001. ADR-0002
   records the repository layout when there are several.
 
-Every `<…>` placeholder is gone before the pull request. Then
-`bash scripts/process/check-kit.sh`, commit, pull request (`handover`).
+Then hand over, per repository, in the project folder:
+
+```bash
+bash "$AIDP/finish-setup.sh" <repository>
+```
+
+It refuses while `CLAUDE.md` or `.ai-dev-process.conf` holds a `<…>`
+placeholder, then runs `check-kit.sh`, commits, pushes and opens the pull
+request that closes the adoption issue. If the terminal was closed since
+step 1, fetch the release again first. The repository settings (ruleset,
+delete branch on merge) follow `docs/adopting.md`.
 
 ## existing
 
-Before running the installer, take inventory — it overwrites any file at a
-managed path:
+Before `setup-repository.sh`, take inventory — its install overwrites any
+file at a managed path:
 
 1. For each managed path
    (`git -C "$AIDP" ls-files kit | sed 's|^kit/[a-z]*/||'`)
