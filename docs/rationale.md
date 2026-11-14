@@ -89,6 +89,15 @@ rules it implements, cannot be tested in CI, and gets rewritten — with guessed
 names — by the next session that does not find it. *Origin:
 dnd-ai-dungeon-master, iteration 001.*
 
+**Cleanup is checked against the pull request, not against `main`.** After
+a rebase or squash merge, `git branch -d` refuses a branch whose content is on
+`main`, and the usual way round it, `git branch -D`, throws away whatever was
+not pushed. Comparing the branch with the merged pull request's last commit is
+exact under every merge method. The same is why the process states a rule for
+a branch that started early instead of a parameter for the merge method: the
+rule holds for every method. *Origin: dnd-ai-dungeon-master, iteration 001a;
+ai-dev-process, #17 and #18 (#10).*
+
 **Every project has a folder, and nothing names an absolute path.** A
 checkout moved a day after setup, and the claude.ai instructions and the
 handover files still named the old path. The documented `~/coding/<repository>`

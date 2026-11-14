@@ -16,7 +16,24 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+### Added
+
+- **`scripts/process/after-merge.sh <branch>`** cleans up after a merge:
+  switches to `main` and fast-forwards it to `origin/main`, deletes the
+  branch locally and on the remote only where it is at the merged pull
+  request's last commit (keeping it with the reason otherwise), and removes
+  `../pr-<issue>-body.md`. The handover skill and `process.md` hand it over
+  after every merge; `test-after-merge.sh` runs it against real repositories
+  and a stand-in `gh`. Why: after a rebase or squash merge `git branch -d`
+  refuses a merged branch, and `git branch -D` throws away whatever was not
+  pushed. *From dnd-ai-dungeon-master* (#10).
+
 ### Changed
+
+- **A branch that started before the previous merge is rebased onto `main`
+  after it** (`workflow.md`), pushed with `--force-with-lease` if it was
+  pushed already. Why: that holds for every merge method, so no merge-method
+  parameter is needed. (#10)
 
 - **An upgrade is the first issue of the next iteration's milestone**
   (`iterations.md`), with no iteration or retro of its own. `adopt-process`
