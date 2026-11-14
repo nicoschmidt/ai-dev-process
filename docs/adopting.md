@@ -179,14 +179,21 @@ change meaning is listed in its body.
 ## An upgrade
 
 Between iterations, and every repository of a project to the same version.
-Fetch the new release as in [Once per machine](#once-per-machine-and-account),
-and read `"$AIDP/CHANGELOG.md"` from the project's version (in
-`.ai-dev-process.lock`) to the new one. Then, with an issue and its branch in
-each repository, in the project folder:
+The upgrade is the first issue of the next iteration's milestone, so that
+milestone exists first. Fetch the new release as in
+[Once per machine](#once-per-machine-and-account), and read
+`"$AIDP/CHANGELOG.md"` from the project's version (in `.ai-dev-process.lock`)
+to the new one. Then, with an issue in that milestone and its branch in each
+repository, in the project folder:
 
 ```bash
 bash "$AIDP/install.sh" <repository>
 ```
+
+When a session prepares the upgrade, it commits on a provisional branch
+`chore/ai-dev-process-<version>` and hands over one script that creates the
+issue in the milestone, renames the branch to carry its number, pushes it and
+opens the pull request, in each repository.
 
 The role is read from the lock; a lock from 0.1.0 is read as `single`. The
 installer refuses if a managed file was edited in the repository. That edit is

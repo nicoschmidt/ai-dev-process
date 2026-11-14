@@ -16,8 +16,9 @@ closes (`close-iteration`).
 - The previous milestone is closed and has its retro. If not, that comes
   first (`close-iteration`).
 - Check whether a newer ai-dev-process release exists than the one in
-  `.ai-dev-process.lock`. Between iterations is the time to upgrade
-  (`adopt-process`, upgrade mode); suggest it, do not slip it into the plan.
+  `.ai-dev-process.lock`. If one does, suggest the upgrade: it becomes the
+  first issue of the milestone being planned (`adopt-process`, upgrade
+  mode), and the maintainer decides.
 - Read `docs/vision.md` (the MVP the iterations work towards), the open
   milestones, and the refined issues that are in none yet, in every
   repository of the project:

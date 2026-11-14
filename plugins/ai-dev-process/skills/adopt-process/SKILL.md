@@ -113,16 +113,54 @@ behaviour; say so in its body, and list everything whose meaning changed.
 
 ## upgrade
 
-1. Fetch the new release (step 1 above), read `"$AIDP/CHANGELOG.md"` between
-   the two versions, and say what each change means for this project.
-2. Install on the branch, in every repository of the project; the role comes
-   from the lock. The installer refuses if a managed file was edited; resolve
-   that first (upstream issue or deviation), never by forcing.
-3. A change that needs a new parameter, a new key in `.ai-dev-process.conf`,
-   or makes a deviation obsolete is made in the same pull request.
-
 Upgrade between iterations, not in the middle of one, and all repositories of
 a project to the same version.
+
+1. Fetch the new release (step 1 above), read `"$AIDP/CHANGELOG.md"` between
+   the two versions, and say what each change means for this project.
+2. **The milestone**: the upgrade is the first issue of the next iteration's
+   milestone (`iterations.md`). If that milestone is not planned yet, plan it
+   first (`plan-iteration`), or ask the maintainer which one.
+3. **The provisional branch**: the upgrade's issue does not exist yet, so
+   commit on `chore/ai-dev-process-<version>` in each repository. Install
+   there; the role comes from the lock. The installer refuses if a managed
+   file was edited; resolve that first (upstream issue or deviation), never
+   by forcing.
+4. A change that needs a new parameter, a new key in `.ai-dev-process.conf`,
+   or makes a deviation obsolete is made on the same branch.
+5. **Hand over one script** in the project folder that, for each repository
+   (home first), creates the issue in the milestone, renames the branch to
+   carry its number, pushes it and opens the pull request. The helpers come
+   from the branch, which already holds the new release. Run it against a
+   stand-in first; it must be safe to run twice:
+
+   ```bash
+   #!/usr/bin/env bash
+   set -euo pipefail
+   PROJECT="$(cd "$(dirname "$0")" && pwd)"
+   VERSION=0.4.0
+   MILESTONE="004 Session journal"
+   for repo in <home> <member>; do
+     cd "$PROJECT/$repo"
+     source scripts/process/gh-issues.sh
+     GH_REPO=""; issues_connect
+     create_issue "type:chore" "$MILESTONE" "chore: upgrade ai-dev-process to $VERSION" \
+       < "$PROJECT/issue-upgrade-$VERSION-body.md" || exit 1
+     branch="chore/$LAST_ISSUE_NUMBER-ai-dev-process-$VERSION"
+     if git rev-parse -q --verify "refs/heads/chore/ai-dev-process-$VERSION" >/dev/null; then
+       git branch -m "chore/ai-dev-process-$VERSION" "$branch"
+     fi
+     git push -u origin "$branch"
+     if [ -z "$(gh pr list --head "$branch" --state open --json number --jq '.[].number')" ]; then
+       sed "s/#ISSUE_NUMBER/#$LAST_ISSUE_NUMBER/" "$PROJECT/pr-upgrade-$VERSION-body.md" \
+         | gh pr create --base main --head "$branch" \
+             --title "chore: upgrade ai-dev-process to $VERSION" --body-file -
+     fi
+   done
+   ```
+
+   The pull request body says `Closes #ISSUE_NUMBER`; the script fills in the
+   number. Merge order: the home repository first.
 
 ### From a board (a lock before 0.3.0, `board_number` in the conf)
 

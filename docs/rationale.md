@@ -226,3 +226,12 @@ a legitimate place to differ.
 
 **Upgrades happen between iterations.** A rule that changes mid-iteration
 changes the meaning of work already planned under the old one.
+
+**An upgrade is the first issue of the next iteration.** Since every piece
+of work needs an issue in a milestone, an upgrade needed one too, and nothing
+said which: one project gave it an iteration of its own, with a retro for a
+version bump. The start of the next iteration is where an upgrade between
+iterations already happens. Its issue is created by the handover, which then
+renames the branch the session committed on, because a session without
+credentials cannot learn the number first. *Origin: dnd-ai-dungeon-master,
+upgrade to 0.3.0 (#34).*

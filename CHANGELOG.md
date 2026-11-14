@@ -16,6 +16,20 @@ Before 1.0.0 a MINOR may also break; the entry says so.
 
 ## Unreleased
 
+### Changed
+
+- **An upgrade is the first issue of the next iteration's milestone**
+  (`iterations.md`), with no iteration or retro of its own. `adopt-process`
+  (upgrade mode) commits on a provisional branch and hands over one script
+  that creates the issue in the milestone, renames the branch to carry its
+  number, pushes it and opens the pull request, per repository;
+  `docs/adopting.md` says the same, and `plan-iteration` plans the upgrade
+  first when a newer release exists. `refine-backlog`: putting several
+  issues into a milestone at once is the readiness decision for each, checked
+  one by one. Why: an upgrade prepared in a session had no issue number for
+  its branch and no milestone that fit, and one project gave it an iteration
+  of its own. *From dnd-ai-dungeon-master* (#34, #36).
+
 ## 0.3.0 — 2026-11-14
 
 Iterations are milestones, readiness is read from the issue, and nothing a
