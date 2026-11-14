@@ -14,10 +14,11 @@ this project.
 ## Repositories
 
 <Either: "This repository is the whole project." Or, for a project of several
-repositories: "This is the project's home repository: vision, ADRs, iterations
-and epics live here." — followed by one line per member repository: its name,
-what it holds, whether it is public or private. They are checked out beside
-this one; the list in .ai-dev-process.conf is the authority.>
+repositories: "This is the project's home repository: vision, ADRs and
+iterations live here." — followed by one line per member repository: its
+name, what it holds, whether it is public or private. They are checked out
+beside this one in the project folder; the list in .ai-dev-process.conf is the
+authority.>
 
 ## What this project is
 
@@ -39,11 +40,11 @@ mechanism that enforces it. Delete this section if there are none.>
 | Repository language | English |
 | Conversation language | <e.g. German> |
 | Branch types | feat, fix, docs, chore |
-| Board fields (facts) | Size, Iteration |
 | Process repository | nicoschmidt/ai-dev-process |
 
-Board, home repository and member repositories are in `.ai-dev-process.conf`,
-where the scripts read them.
+The home repository and the member repositories are in
+`.ai-dev-process.conf`, where the scripts read them. Iterations are
+milestones (`.claude/rules/process/iterations.md`).
 
 ## Definition of done additions
 

@@ -23,6 +23,26 @@ dnd-ai-dungeon-master, after iteration 001.*
 the inbox becomes a back door around refinement, and work starts on
 acceptance criteria nobody wrote.
 
+**Ideas are issues, never board drafts.** Five ideas from one evening were
+noted as draft items on a board. Drafts carry no labels and are not issues,
+so no session that reads issues saw them, and neither did the retro, until
+the board was exported by hand. *Origin: dnd-ai-dungeon-master, iteration
+001 (#4).*
+
+**Ready is read from the issue: labels and milestone.** The `Ready` status on
+a board was the click that got forgotten: two issues were refined and
+planned, still in Backlog, and work started on them anyway (#14). And the
+board is readable only through GraphQL with the `project` scope, which a chat
+session and a cloud session do not have, so the session that should have
+stopped could not see why. Labels and the milestone are readable by every
+session that can read the repository, and assigning the milestone is a
+deliberate act of the maintainer in refinement. *Origin: schulplaner,
+iteration 001; spike #16.*
+
+**Size is not recorded.** The maintainer did not use it to choose work. What
+it guarded, that nothing too large enters an iteration, is item 3 of the
+definition of ready, a judgement made in refinement. *Origin: spike #16.*
+
 ## Branches and gates
 
 **Never commit to `main`, without threshold.** The original rule was
@@ -46,13 +66,18 @@ was right; expecting the maintainer to also write the issue and pull request
 bodies was not. "Create an issue" is an instruction, not a deliverable.
 *Origin: dnd-ai-dungeon-master, setup.*
 
-**Facts are set, judgements are not.** Size and iteration are facts about the
-work and arrive set. Status is a judgement about whether the work is there
-yet, and handing it over as a command would hand over the judgement with it.
+**Facts arrive set, and the judgement is made where it can be seen.** The
+label and the milestone arrive set in the block that creates the issue, so
+the maintainer composes nothing. Whether an issue is ready is a judgement;
+it used to be a status click kept apart from every command, so that a
+handover would not make it for the maintainer. It is now the milestone,
+assigned in a refinement command the maintainer reads before running it:
+still the maintainer's act, and visible to every session afterwards.
+*Origin: spike #16.*
 
-**Board names are read at run time.** Two broken handover scripts reached the
-maintainer with field names from memory. *Origin: dnd-ai-dungeon-master,
-iteration 001.*
+**Names are read at run time.** Two broken handover scripts reached the
+maintainer with board field names from memory. The same holds for milestone
+titles and labels. *Origin: dnd-ai-dungeon-master, iteration 001.*
 
 **Scripts that write to GitHub are run against a stand-in first.** A session
 without credentials has otherwise never run the script at all. *Origin:
@@ -91,11 +116,40 @@ setup.*
 
 ## Iterations
 
-**Scope is the box by default, and scope is cut rather than stretched.** In
-spare-time work a time box only produces a recurring sense of having missed
-it; but a scope box has nothing else that stops growth, so the cut order is
-planned before it is needed. A project with real deadlines sets the box to
-time. *Origin: dnd-ai-dungeon-master, iteration 001, which grew.*
+**An iteration is a milestone.** It used to be an option in a board field,
+an epic issue and a planning file, three places to keep in step, and the
+first of them invisible to most sessions. A milestone holds the goal in its
+description and the scope as its issues, readable by every session over
+REST; the file is left with what only a file can hold, the retro. *Origin:
+spike #16.*
+
+**Scope is the box by default, and iterations are cut small.** In spare-time
+work a time box only produces a recurring sense of having missed it. A scope
+box has nothing else that stops growth; the first answer was a cut order
+planned ahead, but iterations stayed large and felt rigid, and the
+maintainer wanted to bring in what mattered more without the plan blocking
+it. Small iterations make growth cheap to see, and an iteration that ends
+when its goal is met, moving what is open, needs no cut order. A project
+with real deadlines sets the box to time. *Origin: dnd-ai-dungeon-master,
+iteration 001, which grew; spike #16.*
+
+**Scope may be added at any time, but never invisibly.** Requirements were
+added to running iterations several times, in two projects: once by hand in
+three places, twice inside open pull requests where neither the issue nor
+the iteration showed them. The retro found them only because commit messages
+said so. Adding is allowed because priorities really change; the issue in the
+milestone before the work is what keeps it visible. *Origin:
+dnd-ai-dungeon-master, iteration 001a; schulplaner, iteration 001 (#9).*
+
+**When the goal is met, the iteration ends.** A goal was reached at the table
+several times while the iteration stayed open, because everyone looked at
+its open issues rather than its done criterion. A point in `discipline.md`
+makes the check happen; an empty milestone is the other signal. *Origin:
+dnd-ai-dungeon-master, iteration 001 (#7).*
+
+**An MVP is a state, not an iteration.** A large iteration that is the MVP
+grows and blocks everything behind it. Named in the vision, the MVP stays the
+aim while small iterations reach it. *Origin: spike #16.*
 
 **The retro reads evidence.** Memory finds what was annoying last week, not
 what was costly.
@@ -106,8 +160,8 @@ stays in one project's `CLAUDE.md` and is learned again elsewhere.
 
 ## Projects of several repositories
 
-**One home repository for what belongs to the whole project.** Vision, ADRs,
-iterations and epics in two places become two ledgers within a week. A
+**One home repository for what belongs to the whole project.** Vision, ADRs
+and iterations in two places become two ledgers within a week. A
 project of one repository is its own home, so the rule costs it nothing.
 *Origin: compliance-traceability, a public and a private repository with a
 third, private one created as home.*
@@ -129,11 +183,18 @@ there explains nothing to them.
 
 ## Facts scripts read
 
-**The board is named in `.ai-dev-process.conf`, not found.** "The owner's
-only board" stopped being true the day a second project got a board, and an
-environment variable to set before every run is a rule that will be
-forgotten. Data a script needs belongs in a file the script reads, committed
-with the repository. *Origin: the second board, for compliance-traceability.*
+**Data a script needs is in a file the script reads.** When projects still
+had boards, "the owner's only board" stopped being true the day a second
+project got one, and an environment variable to set before every run is a
+rule that will be forgotten. So `.ai-dev-process.conf`, committed with the
+repository, names the project's repositories. *Origin: the second board, for
+compliance-traceability.*
+
+**What a session needs lives in issues and milestones.** A gate holds only if
+the session that should stop can see it. Issues, pull requests and milestones
+are readable over REST by every session that can read the repository; a
+board needs GraphQL and the `project` scope, which only a session on the
+maintainer's machine has. *Origin: spike #16.*
 
 **Existing labels are left as they are.** Creating labels with `--force`
 silently recoloured a project's own labels. A setup step must not overwrite

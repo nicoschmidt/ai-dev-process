@@ -7,7 +7,7 @@ the first goal that does. This records what the setup produced and taught.
 
 - ai-dev-process installed; `CLAUDE.md` with this project's parameters
 - `docs/vision.md`, ADR-0001
-- labels, a project board with Size and Iteration, the `main` ruleset
+- labels, the first milestone, the `main` ruleset
 
 ## Result
 
