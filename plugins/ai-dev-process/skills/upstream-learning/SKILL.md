@@ -33,6 +33,7 @@ cd <repository>
 gh issue transfer 43 nicoschmidt/ai-dev-process
 gh issue edit <new number> --repo nicoschmidt/ai-dev-process \
   --body-file "../upstream-43-body.md" --add-label "from:<project repository name>"
+cd ..
 ```
 
 The new number is printed by the transfer; the script reads it from there
@@ -44,6 +45,7 @@ gh label create "from:<project repository name>" --repo nicoschmidt/ai-dev-proce
 gh issue create --repo nicoschmidt/ai-dev-process --label process \
   --label "from:<project repository name>" \
   --title "<the change, as a statement>" --body-file "../upstream-<slug>-body.md"
+cd ..
 ```
 
 As always: real values, exercised against a stand-in, bodies in the project

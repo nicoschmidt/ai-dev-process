@@ -36,7 +36,8 @@ placeholder, or a step that arrives as an instruction, is a defect.
   what the board does have.
 - **Commands run in the project folder** (`repositories.md`) and name no
   absolute path, because where the project folder lives differs per machine
-  and per developer. A copy-paste block starts with `cd <repository>`; a
+  and per developer. A copy-paste block starts with `cd <repository>` and
+  ends with `cd ..`, so the next block starts in the project folder again; a
   script in the project folder starts with
   `cd "$(dirname "$0")/<repository>"`, so it runs from anywhere. A `gh` call
   aimed at another repository carries `--repo owner/name`. A block that does

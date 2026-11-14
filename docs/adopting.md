@@ -11,8 +11,9 @@ Every project has a folder of its own, also a project of one repository. Its
 repositories are subfolders under their repository names, and what is handed
 over beside them (issue and pull request bodies, one-off scripts) lives there
 too. Where the project folder lives is up to you; nothing in the process names
-it. **Commands on this page start in the project folder**; where they work
-inside a repository, they say so with `cd <repo>`.
+it. **Every block on this page starts and ends in the project folder**; where
+it works inside a repository, it says so with `cd <repo>` and returns with
+`cd ..`.
 
 ## Once per machine and account
 
@@ -62,7 +63,6 @@ lives where is in `.claude/rules/process/repositories.md`.
 
    ```bash
    gh repo create <owner>/<repo> --public --add-readme --license mit --clone
-   cd <repo>
    ```
 
 2. **The board.** The number comes from the first command's output:
@@ -88,15 +88,17 @@ lives where is in `.claude/rules/process/repositories.md`.
    branch with it:
 
    ```bash
+   cd <repo>
    gh issue create --label type:chore --title "chore: adopt ai-dev-process v<version>" \
      --body "Install the kit, fill in CLAUDE.md and .ai-dev-process.conf, set up the ruleset."
    git switch -c chore/<number>-ai-dev-process-<version>
+   cd ..
    ```
 
-5. **Install** the release fetched above, from the repository:
+5. **Install** the release fetched above:
 
    ```bash
-   bash "$AIDP/install.sh" .
+   bash "$AIDP/install.sh" <repo>
    ```
 
 6. **Fill in** `.ai-dev-process.conf` (board, and this repository as
@@ -107,10 +109,12 @@ lives where is in `.claude/rules/process/repositories.md`.
 7. **Commit, push, pull request**:
 
    ```bash
+   cd <repo>
    bash scripts/process/check-kit.sh
    git add -A && git commit -m "chore: adopt ai-dev-process <version>"
    git push -u origin HEAD
    gh pr create --title "chore: adopt ai-dev-process <version>" --body "Closes #<number>"
+   cd ..
    ```
 
 8. **Repository settings**, once CI has run on the pull request:
@@ -126,7 +130,8 @@ lives where is in `.claude/rules/process/repositories.md`.
    and its repositories, no absolute path), and add **no** project knowledge
    documents.
 
-10. **Every further clone** runs `git config core.hooksPath .githooks` once.
+10. **Every further clone** runs `git -C <repo> config core.hooksPath .githooks`
+    once.
 
 ## A project of several repositories
 

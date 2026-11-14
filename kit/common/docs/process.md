@@ -97,6 +97,7 @@ a command, is a defect — say so.
    git branch -d <branch>                  # local
    git push origin --delete <branch>       # remote, if it still exists
    git fetch --prune
+   cd ..
    ```
 
    `gh repo edit --delete-branch-on-merge` makes the remote half unnecessary.

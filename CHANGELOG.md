@@ -22,8 +22,8 @@ Before 1.0.0 a MINOR may also break; the entry says so.
   `repositories.md`: a project's repositories are subfolders of its project
   folder, which also holds what is handed over beside them; where the folder
   lives is named nowhere. `handover.md`: a block starts with
-  `cd <repository>` from the project folder, a script finds the folder from
-  its own location. `adopt-process` settles the project folder first and,
+  `cd <repository>` from the project folder and ends with `cd ..`, a script
+  finds the folder from its own location. `adopt-process` settles the project folder first and,
   like `docs/adopting.md`, takes the installer from a fresh clone of the
   release tag, so no path to a process checkout is needed. The claude.ai
   instructions template names the project folder and its repositories, not
